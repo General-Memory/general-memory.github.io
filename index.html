@@ -127,6 +127,27 @@
         linear-gradient(0deg, rgba(6,9,7,.82) 0%, transparent 56%);
     }
 
+    .hero__end-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(
+        circle clamp(18rem, 28vw, 30rem) at 50% 48%,
+        rgba(5, 8, 6, 0) 0%,
+        rgba(5, 8, 6, .015) 24%,
+        rgba(5, 8, 6, .08) 39%,
+        rgba(5, 8, 6, .28) 60%,
+        rgba(5, 8, 6, .58) 82%,
+        rgba(5, 8, 6, .82) 100%
+      );
+      transition: opacity 1.4s var(--ease);
+      will-change: opacity;
+    }
+
+    .hero.is-ended .hero__end-vignette { opacity: 1; }
+
     .masthead {
       position: absolute;
       inset: 0 0 auto;
@@ -952,6 +973,18 @@
           linear-gradient(0deg, rgba(6,9,7,.9) 0%, transparent 67%);
       }
 
+      .hero__end-vignette {
+        background: radial-gradient(
+          circle clamp(11rem, 56vw, 16rem) at 50% 46%,
+          rgba(5, 8, 6, 0) 0%,
+          rgba(5, 8, 6, .02) 24%,
+          rgba(5, 8, 6, .1) 40%,
+          rgba(5, 8, 6, .32) 62%,
+          rgba(5, 8, 6, .62) 83%,
+          rgba(5, 8, 6, .84) 100%
+        );
+      }
+
       .hero__content { bottom: 6.25rem; }
       .hero h1 { font-size: clamp(3rem, 15vw, 5.15rem); line-height: .88; }
       .scroll-cue { width: 3rem; height: 3rem; }
@@ -1028,6 +1061,7 @@
         </video>
       </div>
       <div class="hero__shade" aria-hidden="true"></div>
+      <div class="hero__end-vignette" aria-hidden="true"></div>
 
       <header class="masthead">
         <a class="wordmark" href="#top" aria-label="General Memory, home">
@@ -1169,6 +1203,7 @@
   </main>
 
   <script>
+    const hero = document.querySelector('.hero');
     const film = document.querySelector('#heroFilm');
     const filmControl = document.querySelector('#filmControl');
     const filmLabel = filmControl.querySelector('.film-control__label');
@@ -1193,8 +1228,15 @@
       }
     });
 
-    film.addEventListener('ended', () => setFilmControl('paused', 'Replay film', 'Replay film'));
-    film.addEventListener('play', () => setFilmControl('playing', 'Pause film', 'Pause film'));
+    film.addEventListener('ended', () => {
+      hero.classList.add('is-ended');
+      setFilmControl('paused', 'Replay film', 'Replay film');
+    });
+
+    film.addEventListener('play', () => {
+      hero.classList.remove('is-ended');
+      setFilmControl('playing', 'Pause film', 'Pause film');
+    });
     film.addEventListener('pause', () => {
       if (!film.ended) setFilmControl('paused', 'Play film', 'Play film');
     });
