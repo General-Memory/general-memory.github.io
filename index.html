@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>General Memory — Stories kept alive</title>
-  <meta name="description" content="Your life is full of stories. General Memory makes them tangible, so they can be kept alive.">
+  <meta name="description" content="Your life is full of stories. Keep them alive with General Memory.">
   <meta name="theme-color" content="#111713">
   <meta property="og:title" content="General Memory — Stories kept alive">
-  <meta property="og:description" content="Your life is full of stories. They deserve to be kept alive.">
+  <meta property="og:description" content="Your life is full of stories. Keep them alive.">
   <meta property="og:type" content="website">
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%23111713'/%3E%3Cpath d='M8 23V13a8 8 0 0 1 16 0v10M12 23V13a4 4 0 0 1 8 0v10' fill='none' stroke='%23c09a57' stroke-width='1.25' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -158,6 +158,10 @@
 
     .masthead__link {
       position: relative;
+      display: inline-flex;
+      min-height: 2.75rem;
+      align-items: center;
+      justify-content: flex-end;
       padding: .55rem 0;
       color: var(--bone);
       font-size: .77rem;
@@ -188,10 +192,6 @@
       bottom: clamp(5.5rem, 11vh, 8.5rem);
       left: var(--gutter);
       z-index: 4;
-      display: grid;
-      grid-template-columns: minmax(0, 13fr) minmax(12rem, 7fr);
-      align-items: end;
-      gap: 2rem;
     }
 
     .hero h1 {
@@ -213,23 +213,6 @@
       color: var(--bone-deep);
     }
 
-    .hero__aside {
-      justify-self: end;
-      max-width: 17rem;
-      padding-bottom: .25rem;
-      color: rgba(229,225,213,.82);
-      font-size: clamp(.88rem, 1.1vw, 1rem);
-    }
-
-    .hero__aside::before {
-      content: "";
-      display: block;
-      width: 2.4rem;
-      height: 1px;
-      margin-bottom: 1.2rem;
-      background: var(--gilt);
-    }
-
     .hero__footer {
       position: absolute;
       right: var(--gutter);
@@ -243,39 +226,33 @@
     }
 
     .scroll-cue {
-      display: inline-flex;
-      align-items: center;
-      gap: .85rem;
+      display: grid;
+      width: 3.5rem;
+      height: 3.5rem;
+      place-items: center;
+      border: 1px solid rgba(229,225,213,.42);
+      border-radius: 50%;
       color: rgba(229,225,213,.78);
-      font-size: .69rem;
-      letter-spacing: .18em;
       text-decoration: none;
-      text-transform: uppercase;
       pointer-events: auto;
+      transition: color 360ms var(--ease), border-color 360ms var(--ease), background 360ms var(--ease);
     }
 
-    .scroll-cue__line {
-      position: relative;
-      display: block;
-      width: 3.4rem;
-      height: 1px;
-      overflow: hidden;
-      background: rgba(229,225,213,.28);
-    }
-
-    .scroll-cue__line::after {
-      content: "";
-      position: absolute;
-      inset: 0;
+    .scroll-cue:hover {
+      border-color: var(--gilt);
+      color: var(--dark);
       background: var(--gilt);
-      transform: translateX(-105%);
-      animation: draw-line 2.4s 1.4s var(--ease) infinite;
     }
 
-    @keyframes draw-line {
-      0% { transform: translateX(-105%); }
-      48%, 72% { transform: translateX(0); }
-      100% { transform: translateX(105%); }
+    .scroll-cue svg {
+      width: 1rem;
+      height: 1.35rem;
+      animation: arrow-drift 2.2s 1.2s var(--ease) infinite;
+    }
+
+    @keyframes arrow-drift {
+      0%, 30%, 100% { transform: translateY(0); }
+      62% { transform: translateY(.28rem); }
     }
 
     .film-control {
@@ -346,7 +323,7 @@
       position: relative;
       z-index: 3;
       display: grid;
-      grid-template-columns: minmax(8rem, 1fr) minmax(17rem, 2.15fr) minmax(12rem, .85fr);
+      grid-template-columns: minmax(8rem, .75fr) minmax(17rem, 3.25fr);
       gap: clamp(1.5rem, 4vw, 5rem);
       align-items: start;
       margin-bottom: clamp(3.5rem, 7vw, 7.5rem);
@@ -361,20 +338,14 @@
     }
 
     .section-head h2 {
-      max-width: 14ch;
+      max-width: 31ch;
       margin: 0;
       font-family: var(--display);
-      font-size: clamp(3rem, 5vw, 6rem);
+      font-size: clamp(2.15rem, 3.35vw, 4.15rem);
       font-weight: 300;
-      letter-spacing: -.025em;
-      line-height: .92;
+      letter-spacing: -.018em;
+      line-height: 1.04;
       text-wrap: balance;
-    }
-
-    .section-head__copy {
-      margin: .35rem 0 0;
-      color: var(--muted);
-      font-size: .95rem;
     }
 
     .gallery {
@@ -829,18 +800,17 @@
       text-transform: uppercase;
     }
 
-    .closing {
+    .contact {
       position: relative;
       display: grid;
-      grid-template-columns: 1fr 1.6fr;
-      gap: 2rem;
-      align-items: end;
-      padding: clamp(5.5rem, 10vw, 10rem) var(--gutter) clamp(2.2rem, 4vw, 3.5rem);
+      min-height: min(82vh, 52rem);
+      place-items: center;
+      padding: clamp(5rem, 10vw, 9rem) var(--gutter);
       color: var(--dark);
       background: var(--bone);
     }
 
-    .closing::before {
+    .contact::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -849,39 +819,83 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
     }
 
-    .closing__mark,
-    .closing__copy { position: relative; z-index: 1; }
+    .contact__card {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(13rem, 1fr) minmax(19rem, 1.35fr);
+      gap: clamp(3rem, 8vw, 8rem);
+      width: min(100%, 72rem);
+      padding: clamp(2rem, 5vw, 5.5rem);
+      border: 1px solid rgba(17,23,19,.2);
+      background: rgba(241,237,226,.62);
+      box-shadow: 0 2rem 5rem -4rem rgba(17,23,19,.48);
+    }
 
-    .closing__mark {
+    .contact__identity,
+    .contact__details { min-width: 0; }
+
+    .contact__mark {
+      display: flex;
+      align-items: center;
+      gap: .72rem;
+      margin: 0;
       color: var(--gilt-deep);
       font-size: .69rem;
       letter-spacing: .19em;
       text-transform: uppercase;
     }
 
-    .closing h2 {
-      max-width: 16ch;
-      margin: 0;
+    .contact__mark svg { width: 1rem; height: 1rem; }
+
+    .contact h2 {
+      margin: clamp(2.5rem, 6vw, 5rem) 0 0;
       font-family: var(--display);
-      font-size: clamp(3rem, 5.5vw, 6.5rem);
+      font-size: clamp(3rem, 5.3vw, 6rem);
       font-weight: 300;
       letter-spacing: -.03em;
-      line-height: .9;
+      line-height: .88;
     }
 
-    .closing__foot {
-      position: relative;
-      z-index: 1;
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: space-between;
-      margin-top: clamp(4rem, 8vw, 8rem);
-      padding-top: 1.15rem;
+    .contact__details {
+      align-self: end;
+      margin: 0;
       border-top: 1px solid rgba(17,23,19,.2);
-      color: rgba(17,23,19,.68);
-      font-size: .67rem;
-      letter-spacing: .15em;
+    }
+
+    .contact__row {
+      display: grid;
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: baseline;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(17,23,19,.2);
+    }
+
+    .contact__row dt {
+      color: rgba(17,23,19,.58);
+      font-size: .64rem;
+      letter-spacing: .17em;
       text-transform: uppercase;
+    }
+
+    .contact__row dd { margin: 0; min-width: 0; }
+
+    .contact__row a {
+      color: var(--dark);
+      font-family: var(--display);
+      font-size: clamp(1.35rem, 2.1vw, 2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      text-decoration-color: transparent;
+      text-decoration-thickness: 1px;
+      text-underline-offset: .28em;
+      transition: color 280ms var(--ease), text-decoration-color 280ms var(--ease);
+    }
+
+    .contact__row a:hover {
+      color: var(--gilt-deep);
+      text-decoration-color: currentColor;
     }
 
     .reveal {
@@ -893,19 +907,11 @@
     .reveal.is-visible { opacity: 1; transform: none; }
 
     @media (max-width: 860px) {
-      .hero__content {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-
       .hero h1 { max-width: 12ch; font-size: clamp(3.5rem, 12.5vw, 6.8rem); }
-      .hero__aside { display: none; }
 
       .section-head {
         grid-template-columns: minmax(6rem, .35fr) 1.65fr;
       }
-
-      .section-head__copy { grid-column: 2; max-width: 28rem; }
 
       .gallery__stage {
         grid-template-columns: 1fr;
@@ -920,6 +926,11 @@
 
       .gallery__copy { justify-self: center; width: min(100%, 31rem); }
       .gallery__counter { text-align: left; }
+
+      .contact__card {
+        grid-template-columns: 1fr;
+        gap: 3.75rem;
+      }
     }
 
     @media (max-width: 560px) {
@@ -927,7 +938,13 @@
       .wordmark { gap: .55rem; }
       .wordmark svg { width: 1.05rem; height: 1.05rem; }
       .wordmark span { max-width: 9rem; font-size: 1.02rem; line-height: 1.05; letter-spacing: .15em; }
-      .masthead__link { font-size: .63rem; }
+      .masthead__link {
+        max-width: 9.5rem;
+        font-size: .6rem;
+        line-height: 1.35;
+        letter-spacing: .11em;
+        text-align: right;
+      }
 
       .hero__shade {
         background:
@@ -937,7 +954,7 @@
 
       .hero__content { bottom: 6.25rem; }
       .hero h1 { font-size: clamp(3rem, 15vw, 5.15rem); line-height: .88; }
-      .scroll-cue__line { width: 2.2rem; }
+      .scroll-cue { width: 3rem; height: 3rem; }
       .film-control { font-size: 0; gap: 0; width: 2.75rem; height: 2.75rem; place-content: center; }
 
       .artefacts { padding-top: 5.75rem; }
@@ -948,21 +965,42 @@
         margin-bottom: 3.25rem;
       }
 
-      .section-head__copy { grid-column: auto; }
-      .section-head h2 { font-size: clamp(3rem, 14vw, 4.25rem); }
+      .section-head h2 { font-size: clamp(1.9rem, 7.7vw, 2.65rem); line-height: 1.08; }
       .plate-stack { width: 100%; }
       .gallery__title { font-size: clamp(2.65rem, 12vw, 3.8rem); }
 
       .gallery__nav { align-items: flex-start; flex-wrap: wrap; }
       .gallery-index { order: 3; width: 100%; margin: .6rem 0 0; }
 
-      .closing {
-        grid-template-columns: 1fr;
-        gap: 1.6rem;
+      .contact__card {
+        padding: 2rem 1.4rem;
       }
 
-      .closing__foot { gap: 1rem; }
-      .closing__foot span:last-child { text-align: right; }
+      .contact h2 { margin-top: 2.25rem; }
+
+      .contact__row {
+        grid-template-columns: 1fr;
+        gap: .45rem;
+      }
+
+      .contact__row a {
+        font-size: clamp(1.25rem, 6.2vw, 1.75rem);
+        overflow-wrap: anywhere;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .wordmark span {
+        max-width: 7rem;
+        font-size: .86rem;
+        letter-spacing: .12em;
+      }
+
+      .masthead__link {
+        max-width: 7.9rem;
+        font-size: .53rem;
+        letter-spacing: .09em;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -998,18 +1036,18 @@
           </svg>
           <span>General Memory</span>
         </a>
-        <a class="masthead__link" href="#artefacts">The artefact</a>
+        <a class="masthead__link" href="#contact">I'm ready to start the journey</a>
       </header>
 
       <div class="hero__content">
-        <h1 id="hero-title">Your life is full of stories.<span>They deserve to be kept alive.</span></h1>
-        <p class="hero__aside">A singular volume, made to hold one life — its voice, photographs, letters, and the details that make a story yours.</p>
+        <h1 id="hero-title">Your life is full of stories.<span>Keep them alive.</span></h1>
       </div>
 
       <div class="hero__footer">
-        <a class="scroll-cue" href="#artefacts">
-          <span class="scroll-cue__line" aria-hidden="true"></span>
-          <span>View the artefact</span>
+        <a class="scroll-cue" href="#artefacts" aria-label="Explore the artefact">
+          <svg viewBox="0 0 18 24" fill="none" aria-hidden="true">
+            <path d="M9 1v20M2.5 14.5 9 21l6.5-6.5" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </a>
         <button class="film-control" id="filmControl" type="button" data-state="playing" aria-label="Pause film">
           <span class="film-control__icon" aria-hidden="true"></span>
@@ -1021,8 +1059,7 @@
     <section class="artefacts bookcloth" id="artefacts" aria-labelledby="artefacts-title">
       <header class="section-head reveal">
         <p class="eyebrow">The artefact</p>
-        <h2 id="artefacts-title">One life. Made tangible.</h2>
-        <p class="section-head__copy">No two commissions are alike. Each is written, designed, and bound as an object made to outlive us.</p>
+        <h2 id="artefacts-title">General Memory is a private, white-glove experience that preserves your memories. We listen to your life stories, help you gather all the photographs, letters and papers that matter to you, and turn them into beautiful objects designed to last generations.</h2>
       </header>
 
       <div class="gallery reveal" aria-roledescription="carousel" aria-label="Artefact material studies">
@@ -1105,15 +1142,29 @@
       </div>
     </section>
 
-    <section class="closing" aria-labelledby="closing-title">
-      <p class="closing__mark">General Memory / Singapore</p>
-      <div class="closing__copy">
-        <h2 id="closing-title">What we keep keeps us.</h2>
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="contact__card reveal">
+        <div class="contact__identity">
+          <p class="contact__mark">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 20V10a8 8 0 0 1 16 0v10M8 20V10a4 4 0 0 1 8 0v10" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+            </svg>
+            <span>Private commissions / Singapore</span>
+          </p>
+          <h2 id="contact-title">General<br>Memory</h2>
+        </div>
+
+        <dl class="contact__details">
+          <div class="contact__row">
+            <dt>Email</dt>
+            <dd><a href="mailto:hello@generalmemory.co">hello@generalmemory.co</a></dd>
+          </div>
+          <div class="contact__row">
+            <dt>Telephone</dt>
+            <dd><a href="tel:+6581261788">+65 8126 1788</a></dd>
+          </div>
+        </dl>
       </div>
-      <footer class="closing__foot">
-        <span>Private commissions</span>
-        <span>Stories, made to last</span>
-      </footer>
     </section>
   </main>
 
