@@ -1,0 +1,1652 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>General Memory — Stories kept alive</title>
+  <meta name="description" content="Your life is full of stories. Keep them alive with General Memory.">
+  <meta name="theme-color" content="#111713">
+  <meta property="og:title" content="General Memory — Stories kept alive">
+  <meta property="og:description" content="Your life is full of stories. Keep them alive.">
+  <meta property="og:type" content="website">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%23111713'/%3E%3Cpath d='M8 23V13a8 8 0 0 1 16 0v10M12 23V13a4 4 0 0 1 8 0v10' fill='none' stroke='%23c09a57' stroke-width='1.25' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&amp;family=Spectral:ital,wght@0,300;0,400;0,500;1,300&amp;display=swap" rel="stylesheet">
+
+  <script>document.documentElement.classList.add('js');</script>
+
+  <style>
+    :root {
+      --dark: #111713;
+      --dark-lift: #19201b;
+      --dark-soft: #222b25;
+      --bone: #e5e1d5;
+      --bone-deep: #c9c2b2;
+      --muted: #a39b8c;
+      --gilt: #c09a57;
+      --gilt-deep: #72501e;
+      --rule: rgba(229, 225, 213, .17);
+      --display: "Cormorant Garamond", "Iowan Old Style", Garamond, Georgia, serif;
+      --text: "Spectral", Georgia, serif;
+      --gutter: clamp(1.25rem, 4.2vw, 4.75rem);
+      --ease: cubic-bezier(.16, 1, .3, 1);
+
+      /* Set by the parting mechanic; these defaults are the resting state. */
+      --open: 0;
+      --copy: 1;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--dark);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      color: var(--bone);
+      background: var(--dark);
+      font-family: var(--text);
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { color: inherit; font: inherit; }
+    a { color: inherit; }
+    img, video { display: block; max-width: 100%; }
+    ::selection { color: var(--dark); background: var(--gilt); }
+
+    :focus-visible {
+      outline: 2px solid var(--gilt);
+      outline-offset: 4px;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: .75rem;
+      left: .75rem;
+      z-index: 100;
+      padding: .65rem 1rem;
+      color: var(--dark);
+      background: var(--bone);
+      transform: translateY(-160%);
+      transition: transform 180ms ease;
+    }
+
+    .skip-link:focus { transform: none; }
+
+    /* A restrained bookcloth grain carried over from the original. */
+    .bookcloth::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: .52;
+      background-image:
+        repeating-linear-gradient(90deg, rgba(229,225,213,.025) 0 1px, transparent 1px 3px),
+        repeating-linear-gradient(0deg, rgba(229,225,213,.02) 0 1px, transparent 1px 3px);
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      z-index: 2;
+      isolation: isolate;
+      border-bottom: 1px solid rgba(192,154,87, calc(.16 + var(--open) * .52));
+      box-shadow: 0 1.4rem 3.4rem rgba(0,0,0,.66);
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      overflow: hidden;
+      background: #0b0f0d;
+    }
+
+    .hero__film,
+    .hero__film video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero__film video {
+      object-fit: cover;
+      object-position: center center;
+      background: #0b0f0d;
+    }
+
+    .hero__shade {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(6,9,7,.65) 0%, transparent 26%),
+        linear-gradient(90deg, rgba(6,9,7,.60) 0%, rgba(6,9,7,.06) 64%),
+        linear-gradient(0deg, rgba(6,9,7,.82) 0%, transparent 56%);
+    }
+
+    .hero__end-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(
+        circle clamp(18rem, 28vw, 30rem) at 50% 48%,
+        rgba(5, 8, 6, 0) 0%,
+        rgba(5, 8, 6, .015) 24%,
+        rgba(5, 8, 6, .08) 39%,
+        rgba(5, 8, 6, .28) 60%,
+        rgba(5, 8, 6, .58) 82%,
+        rgba(5, 8, 6, .82) 100%
+      );
+      transition: opacity 1.4s var(--ease);
+      will-change: opacity;
+    }
+
+    .hero.is-ended .hero__end-vignette { opacity: 1; }
+
+    .masthead {
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(1.35rem, 3vw, 2.4rem) var(--gutter);
+    }
+
+    .wordmark {
+      display: inline-flex;
+      align-items: center;
+      gap: .8rem;
+      color: var(--bone);
+      text-decoration: none;
+    }
+
+    .wordmark svg { width: 1.35rem; height: 1.35rem; }
+
+    .wordmark span {
+      font-family: var(--display);
+      font-size: clamp(1.2rem, 1.6vw, 1.6rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+
+    .masthead__link {
+      position: relative;
+      display: inline-flex;
+      min-height: 2.75rem;
+      align-items: center;
+      justify-content: flex-end;
+      padding: .55rem 0;
+      color: var(--bone);
+      font-size: .77rem;
+      line-height: 1;
+      letter-spacing: .15em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .masthead__link::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: .2rem;
+      left: 0;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(.28);
+      transform-origin: right;
+      transition: transform 420ms var(--ease);
+    }
+
+    .masthead__link:hover::after { transform: scaleX(1); }
+
+    .hero__content {
+      position: absolute;
+      right: var(--gutter);
+      bottom: clamp(5.5rem, 11vh, 8.5rem);
+      left: var(--gutter);
+      z-index: 4;
+    }
+
+    .hero h1 {
+      max-width: 15ch;
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(3.55rem, 7.3vw, 8.4rem);
+      font-weight: 300;
+      letter-spacing: -.032em;
+      line-height: .86;
+      text-wrap: balance;
+      text-shadow: 0 2px 26px rgba(0,0,0,.34);
+    }
+
+    .hero h1 span {
+      display: block;
+      margin-top: .16em;
+      font-style: italic;
+      color: var(--bone-deep);
+    }
+
+    .hero__footer {
+      position: absolute;
+      right: var(--gutter);
+      bottom: 1.55rem;
+      left: var(--gutter);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .scroll-cue {
+      display: grid;
+      width: 3.5rem;
+      height: 3.5rem;
+      place-items: center;
+      border: 1px solid rgba(229,225,213,.42);
+      border-radius: 50%;
+      color: rgba(229,225,213,.78);
+      text-decoration: none;
+      pointer-events: auto;
+      transition: color 360ms var(--ease), border-color 360ms var(--ease), background 360ms var(--ease);
+    }
+
+    .scroll-cue:hover {
+      border-color: var(--gilt);
+      color: var(--dark);
+      background: var(--gilt);
+    }
+
+    .scroll-cue svg {
+      width: 1rem;
+      height: 1.35rem;
+      animation: arrow-drift 2.2s 1.2s var(--ease) infinite;
+    }
+
+    @keyframes arrow-drift {
+      0%, 30%, 100% { transform: translateY(0); }
+      62% { transform: translateY(.28rem); }
+    }
+
+    .film-control {
+      display: inline-grid;
+      grid-template-columns: .8rem auto;
+      align-items: center;
+      gap: .7rem;
+      border: 0;
+      padding: .65rem 0;
+      color: rgba(229,225,213,.78);
+      background: transparent;
+      font-size: .69rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .film-control__icon {
+      position: relative;
+      display: block;
+      width: .65rem;
+      height: .8rem;
+    }
+
+    .film-control__icon::before,
+    .film-control__icon::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: currentColor;
+    }
+
+    .film-control__icon::before { left: 1px; }
+    .film-control__icon::after { right: 1px; }
+
+    .film-control[data-state="paused"] .film-control__icon::before {
+      inset: 0;
+      width: auto;
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+      background: currentColor;
+    }
+
+    .film-control[data-state="paused"] .film-control__icon::after { display: none; }
+
+    /* ── The parting ──
+       The seam where the hero meets the artefacts opens: the hero is held
+       back while the section below is held down, and the gap between their
+       two edges widens into a full aperture with the statement behind it.
+       Then the seam closes and the page carries on. Both halves are placed
+       by pure functions of scroll position, so nothing can drift out of
+       register however fast the page is scrolled. Without the mechanic
+       (no JS, narrow screens, reduced motion) this is an ordinary section. */
+    .aperture {
+      position: relative;
+      z-index: 1;
+      background: #0b0f0d;
+    }
+
+    .aperture__stage {
+      position: relative;
+      display: grid;
+      align-items: center;
+      overflow: hidden;
+      padding: clamp(3.5rem, 11vw, 7rem) 0;
+      background: radial-gradient(125% 92% at 50% 50%, #1d2822 0%, #151c18 47%, #0b100e 100%);
+    }
+
+    /* Light spilling from inside, along whichever edge is currently open */
+    .aperture__lip {
+      position: absolute;
+      right: 0;
+      left: 0;
+      height: clamp(4rem, 9vh, 7.5rem);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .aperture__lip--top {
+      top: calc(50% - var(--open) * 50%);
+      background: linear-gradient(180deg, rgba(192,154,87,.16), rgba(192,154,87,0) 78%);
+    }
+
+    .aperture__lip--bottom {
+      bottom: calc(50% - var(--open) * 50%);
+      background: linear-gradient(0deg, rgba(192,154,87,.16), rgba(192,154,87,0) 78%);
+    }
+
+    /* A hairline centred on the seam, drawn out as the two edges part */
+    .seam-tick {
+      position: absolute;
+      left: 50%;
+      z-index: 6;
+      width: calc(5rem + var(--open) * 17rem);
+      height: 1px;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(192,154,87,.9), transparent);
+      opacity: calc(.28 + var(--open) * .62);
+      transform: translateX(-50%);
+    }
+
+    .seam-tick--hero { bottom: 0; }
+    .seam-tick--next { top: 0; }
+
+    .aperture__inner {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      padding: 0 var(--gutter);
+      opacity: var(--copy);
+      transform: translate3d(0, calc((1 - var(--copy)) * 1.25rem), 0);
+    }
+
+    .aperture__lede-row {
+      display: grid;
+      grid-template-columns: minmax(7rem, .55fr) minmax(0, 4fr);
+      gap: clamp(1.5rem, 4vw, 5rem);
+      align-items: start;
+    }
+
+    .aperture__eyebrow {
+      margin: .55rem 0 0;
+      color: var(--gilt);
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .aperture__lede {
+      max-width: 47ch;
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(1.55rem, min(2.85vw, 4.35vh), 3.05rem);
+      font-weight: 300;
+      letter-spacing: -.014em;
+      line-height: 1.15;
+      text-wrap: pretty;
+    }
+
+    .movements {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1.75rem, 4.4vw, 5.5rem);
+      margin: clamp(2.5rem, 6.5vh, 5.25rem) 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .movement {
+      position: relative;
+      padding-top: clamp(1.15rem, 2.2vh, 1.75rem);
+    }
+
+    .movement::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gilt) 0%, rgba(192,154,87,.1) 100%);
+    }
+
+    .movement__numeral {
+      display: block;
+      margin-bottom: .5rem;
+      color: var(--gilt);
+      font-family: var(--display);
+      font-size: .92rem;
+      letter-spacing: .24em;
+      line-height: 1;
+    }
+
+    .movement h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(1.45rem, min(2.1vw, 3.2vh), 2.3rem);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -.008em;
+      line-height: 1;
+    }
+
+    .movement p {
+      max-width: 40ch;
+      margin: .9rem 0 0;
+      color: var(--muted);
+      font-size: clamp(.85rem, min(1vw, 1.7vh), .98rem);
+      line-height: 1.64;
+    }
+
+    /* With the script running, the section becomes scroll distance and the
+       stage is lifted out of flow to sit behind the two parting halves. */
+    .js .aperture { height: 280vh; }
+
+    .js .aperture__stage {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      padding: clamp(2.5rem, 6vh, 5rem) 0;
+    }
+
+    .js .aperture__lip { opacity: var(--open); }
+
+    /* Artefact gallery */
+    .artefacts {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      border-top: 1px solid rgba(192,154,87, calc(.16 + var(--open) * .52));
+      box-shadow:
+        0 -1.4rem 3.4rem rgba(0,0,0,.66),
+        inset 0 3.5rem 4.5rem -3.5rem rgba(0,0,0,.95);
+      padding: clamp(6.75rem, 10vw, 10rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+      overflow: hidden;
+      background: var(--dark);
+    }
+
+    .artefacts::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: var(--gutter);
+      left: var(--gutter);
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .section-head {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: minmax(8rem, .75fr) minmax(17rem, 3.25fr);
+      gap: clamp(1.5rem, 4vw, 5rem);
+      align-items: start;
+      margin-bottom: clamp(3.5rem, 7vw, 7.5rem);
+    }
+
+    .eyebrow {
+      margin: .35rem 0 0;
+      color: var(--gilt);
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .section-head h2 {
+      max-width: 31ch;
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(2.15rem, 3.35vw, 4.15rem);
+      font-weight: 300;
+      letter-spacing: -.018em;
+      line-height: 1.04;
+      text-wrap: balance;
+    }
+
+    .gallery {
+      position: relative;
+      z-index: 3;
+    }
+
+    .gallery__stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(17rem, 1.15fr) minmax(17rem, .85fr);
+      align-items: center;
+      gap: clamp(3rem, 8vw, 9rem);
+      min-height: min(70vh, 48rem);
+    }
+
+    .plate-stack {
+      position: relative;
+      justify-self: end;
+      width: min(100%, 35rem);
+      aspect-ratio: 4 / 5;
+    }
+
+    .plate {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      padding: clamp(.55rem, 1vw, .9rem);
+      border: 1px solid var(--rule);
+      background: var(--dark-lift);
+      box-shadow: 0 45px 95px -48px rgba(0,0,0,.95);
+      opacity: 0;
+      transform: translateX(1.4rem) scale(.985);
+      visibility: hidden;
+      transition:
+        opacity 520ms var(--ease),
+        transform 760ms var(--ease),
+        visibility 0s linear 760ms;
+    }
+
+    .plate.is-active {
+      z-index: 2;
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .study {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(192,154,87,.27);
+      background: #151c18;
+    }
+
+    .study::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 5rem rgba(0,0,0,.42);
+    }
+
+    .study__note {
+      position: absolute;
+      bottom: 1.1rem;
+      left: 1.2rem;
+      z-index: 4;
+      margin: 0;
+      color: rgba(229,225,213,.48);
+      font-size: .58rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    /* I — closed volume */
+    .study--volume { perspective: 900px; }
+    .volume {
+      position: relative;
+      width: 51%;
+      aspect-ratio: .74;
+      transform: rotateY(-12deg) rotateZ(-4deg);
+      transform-style: preserve-3d;
+      background:
+        repeating-linear-gradient(90deg, rgba(229,225,213,.025) 0 1px, transparent 1px 3px),
+        #27372e;
+      box-shadow: 1.25rem 1.8rem 2rem rgba(0,0,0,.45), inset 1rem 0 rgba(14,19,16,.45);
+    }
+
+    .volume::before {
+      content: "";
+      position: absolute;
+      inset: 6% 7% 6% 19%;
+      border: 1px solid rgba(192,154,87,.75);
+    }
+
+    .volume::after {
+      content: "General\A Memory";
+      position: absolute;
+      top: 42%;
+      right: 10%;
+      left: 23%;
+      color: var(--gilt);
+      font-family: var(--display);
+      font-size: clamp(1rem, 2.2vw, 2rem);
+      font-weight: 400;
+      line-height: .9;
+      text-align: center;
+      text-transform: uppercase;
+      white-space: pre;
+    }
+
+    /* II — open spread */
+    .spread {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 78%;
+      aspect-ratio: 1.55;
+      filter: drop-shadow(0 1.6rem 1.3rem rgba(0,0,0,.45));
+      transform: rotateX(7deg) rotateZ(2deg);
+    }
+
+    .page {
+      position: relative;
+      overflow: hidden;
+      padding: 9% 10%;
+      color: #20271f;
+      background:
+        radial-gradient(circle at 40% 22%, rgba(255,255,255,.5), transparent 34%),
+        #d8d2c3;
+    }
+
+    .page:first-child { box-shadow: inset -1.2rem 0 1.7rem rgba(55,48,36,.16); }
+    .page:last-child { box-shadow: inset 1.2rem 0 1.7rem rgba(55,48,36,.16); }
+
+    .page__photo {
+      width: 100%;
+      height: 54%;
+      margin-top: 1.2rem;
+      background:
+        linear-gradient(145deg, transparent 48%, rgba(213,207,191,.7) 49%),
+        linear-gradient(35deg, #4a5149 28%, #8b8d7f 29% 58%, #b4ad9c 59%);
+      filter: grayscale(.7) sepia(.22);
+    }
+
+    .lines,
+    .lines::before,
+    .lines::after {
+      display: block;
+      height: 1px;
+      background: rgba(32,39,31,.28);
+    }
+
+    .lines { position: relative; width: 82%; margin-top: 1.2rem; }
+    .lines::before, .lines::after { content: ""; position: absolute; left: 0; }
+    .lines::before { top: .65rem; width: 100%; }
+    .lines::after { top: 1.3rem; width: 61%; }
+
+    .page__title {
+      display: block;
+      font-family: var(--display);
+      font-size: clamp(1rem, 2vw, 1.8rem);
+      line-height: 1;
+    }
+
+    /* III — gold blocking */
+    .study--gilt {
+      background:
+        radial-gradient(circle at 48% 40%, rgba(117,137,120,.2), transparent 42%),
+        repeating-linear-gradient(90deg, rgba(229,225,213,.02) 0 1px, transparent 1px 3px),
+        #233329;
+    }
+
+    .gilt-title {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 57%;
+      aspect-ratio: 1;
+      border: 1px solid rgba(192,154,87,.72);
+      color: var(--gilt);
+      font-family: var(--display);
+      font-size: clamp(1.7rem, 4.5vw, 4.3rem);
+      line-height: .8;
+      text-align: center;
+      text-transform: uppercase;
+      transform: rotate(-2deg);
+    }
+
+    .gilt-title::before,
+    .gilt-title::after {
+      content: "";
+      position: absolute;
+      width: 12%;
+      height: 12%;
+      border: solid currentColor;
+    }
+
+    .gilt-title::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .gilt-title::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+
+    /* IV — folio */
+    .folio {
+      position: relative;
+      width: 53%;
+      aspect-ratio: .78;
+    }
+
+    .folio__sheet {
+      position: absolute;
+      inset: 0;
+      padding: 8%;
+      background: #d9d3c3;
+      box-shadow: 0 1.1rem 1.6rem rgba(0,0,0,.28);
+    }
+
+    .folio__sheet:nth-child(1) { transform: rotate(-10deg) translate(-10%, 2%); }
+    .folio__sheet:nth-child(2) { transform: rotate(7deg) translate(11%, -2%); }
+    .folio__sheet:nth-child(3) { transform: rotate(-1deg); }
+
+    .folio__image {
+      width: 100%;
+      height: 72%;
+      background:
+        radial-gradient(circle at 56% 34%, #9e998c 0 9%, transparent 10%),
+        linear-gradient(145deg, transparent 47%, rgba(217,211,195,.55) 48%),
+        linear-gradient(40deg, #555b54 0 33%, #85867c 34% 66%, #beb6a5 67%);
+      filter: grayscale(.8) sepia(.15);
+    }
+
+    .folio__rule { display: block; width: 46%; height: 1px; margin-top: 12%; background: rgba(32,39,31,.42); }
+
+    /* V — clamshell case */
+    .study--case { perspective: 900px; }
+    .case {
+      position: relative;
+      width: 66%;
+      aspect-ratio: 1.05;
+      transform: rotateX(60deg) rotateZ(-16deg) translateY(6%);
+      transform-style: preserve-3d;
+    }
+
+    .case__base {
+      position: absolute;
+      inset: 30% 0 0;
+      border: clamp(.65rem, 1.5vw, 1.2rem) solid #314238;
+      background: #171d19;
+      box-shadow: .8rem 1rem 1.5rem rgba(0,0,0,.45);
+    }
+
+    .case__base::before {
+      content: "";
+      position: absolute;
+      inset: 9% 15%;
+      background: #27372e;
+      box-shadow: inset .65rem 0 rgba(12,17,14,.4);
+    }
+
+    .case__lid {
+      position: absolute;
+      right: 0;
+      bottom: 70%;
+      left: 0;
+      height: 68%;
+      border: .35rem solid #314238;
+      background:
+        repeating-linear-gradient(90deg, rgba(229,225,213,.025) 0 1px, transparent 1px 3px),
+        #27372e;
+      transform: rotateX(-38deg);
+      transform-origin: bottom;
+      box-shadow: 0 -.7rem 1.3rem rgba(0,0,0,.24);
+    }
+
+    .case__lid::after {
+      content: "GM";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--gilt);
+      font-family: var(--display);
+      font-size: clamp(1.4rem, 4vw, 3.4rem);
+      letter-spacing: .08em;
+    }
+
+    /* VI — engraved plate */
+    .study--archive {
+      background:
+        repeating-linear-gradient(0deg, rgba(229,225,213,.018) 0 1px, transparent 1px 3px),
+        #1d2922;
+    }
+
+    .archive-mark {
+      position: relative;
+      width: 66%;
+      min-height: 26%;
+      padding: 7% 8%;
+      border: 1px solid #d2b679;
+      color: #493514;
+      background: #af8844;
+      box-shadow:
+        0 1.3rem 2rem rgba(0,0,0,.48),
+        inset 0 1px rgba(255,244,197,.65),
+        inset 0 -1px rgba(67,42,10,.5);
+      transform: rotate(-3deg);
+      text-align: center;
+    }
+
+    .archive-mark::after {
+      content: "";
+      position: absolute;
+      inset: .45rem;
+      border: 1px solid rgba(73,53,20,.42);
+    }
+
+    .archive-mark__brand,
+    .archive-mark__number { position: relative; z-index: 2; display: block; }
+
+    .archive-mark__brand {
+      font-family: var(--display);
+      font-size: clamp(1.1rem, 2.8vw, 2.4rem);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .archive-mark__number {
+      margin-top: .6rem;
+      font-size: clamp(.46rem, .8vw, .7rem);
+      font-weight: 400;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .gallery__copy { max-width: 31rem; }
+
+    .gallery__number {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0 0 1.35rem;
+      color: var(--gilt);
+      font-family: var(--display);
+      font-size: 1.05rem;
+      letter-spacing: .11em;
+    }
+
+    .gallery__number::after {
+      content: "";
+      width: 2.5rem;
+      height: 1px;
+      background: currentColor;
+      opacity: .5;
+    }
+
+    .gallery__title {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(2.55rem, 4.2vw, 5rem);
+      font-weight: 300;
+      letter-spacing: -.02em;
+      line-height: .94;
+    }
+
+    .gallery__description {
+      margin: 1.55rem 0 0;
+      color: var(--muted);
+      font-size: clamp(.92rem, 1.2vw, 1.03rem);
+      max-width: 36ch;
+    }
+
+    .gallery__nav {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-top: clamp(2.5rem, 5vw, 4.5rem);
+    }
+
+    .gallery-arrow {
+      display: grid;
+      width: 3.25rem;
+      height: 3.25rem;
+      place-items: center;
+      border: 1px solid var(--rule);
+      border-radius: 50%;
+      color: var(--bone);
+      background: transparent;
+      cursor: pointer;
+      transition: color 320ms var(--ease), background 320ms var(--ease), border-color 320ms var(--ease);
+    }
+
+    .gallery-arrow:hover:not(:disabled) {
+      border-color: var(--gilt);
+      color: var(--dark);
+      background: var(--gilt);
+    }
+
+    .gallery-arrow:disabled { cursor: default; opacity: .24; }
+    .gallery-arrow svg { width: 1rem; height: 1rem; }
+
+    .gallery-index {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .1rem;
+      margin-left: clamp(.3rem, 1vw, 1.1rem);
+    }
+
+    .gallery-index button {
+      position: relative;
+      min-width: 2.65rem;
+      min-height: 2.65rem;
+      border: 0;
+      padding: .5rem;
+      color: var(--muted);
+      background: transparent;
+      font-family: var(--display);
+      font-size: .9rem;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: color 300ms var(--ease);
+    }
+
+    .gallery-index button::after {
+      content: "";
+      position: absolute;
+      right: .55rem;
+      bottom: .35rem;
+      left: .55rem;
+      height: 1px;
+      background: var(--gilt);
+      transform: scaleX(0);
+      transition: transform 420ms var(--ease);
+    }
+
+    .gallery-index button:hover { color: var(--bone); }
+    .gallery-index button[aria-current="true"] { color: var(--gilt); }
+    .gallery-index button[aria-current="true"]::after { transform: scaleX(1); }
+
+    .gallery__counter {
+      margin: clamp(3rem, 6vw, 5rem) 0 0;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--rule);
+      color: rgba(229,225,213,.48);
+      font-size: .66rem;
+      letter-spacing: .17em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .contact {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      min-height: min(82vh, 52rem);
+      place-items: center;
+      padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+      color: var(--dark);
+      background: var(--bone);
+    }
+
+    .contact::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .34;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+    }
+
+    .contact__card {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(13rem, 1fr) minmax(19rem, 1.35fr);
+      gap: clamp(3rem, 8vw, 8rem);
+      width: min(100%, 72rem);
+      padding: clamp(2rem, 5vw, 5.5rem);
+      border: 1px solid rgba(17,23,19,.2);
+      background: rgba(241,237,226,.62);
+      box-shadow: 0 2rem 5rem -4rem rgba(17,23,19,.48);
+    }
+
+    .contact__identity,
+    .contact__details { min-width: 0; }
+
+    .contact__mark {
+      display: flex;
+      align-items: center;
+      gap: .72rem;
+      margin: 0;
+      color: var(--gilt-deep);
+      font-size: .69rem;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+
+    .contact__mark svg { width: 1rem; height: 1rem; }
+
+    .contact h2 {
+      margin: clamp(2.5rem, 6vw, 5rem) 0 0;
+      font-family: var(--display);
+      font-size: clamp(3rem, 5.3vw, 6rem);
+      font-weight: 300;
+      letter-spacing: -.03em;
+      line-height: .88;
+    }
+
+    .contact__details {
+      align-self: end;
+      margin: 0;
+      border-top: 1px solid rgba(17,23,19,.2);
+    }
+
+    .contact__row {
+      display: grid;
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: baseline;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(17,23,19,.2);
+    }
+
+    .contact__row dt {
+      color: rgba(17,23,19,.58);
+      font-size: .64rem;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .contact__row dd { margin: 0; min-width: 0; }
+
+    .contact__row a {
+      color: var(--dark);
+      font-family: var(--display);
+      font-size: clamp(1.35rem, 2.1vw, 2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      text-decoration-color: transparent;
+      text-decoration-thickness: 1px;
+      text-underline-offset: .28em;
+      transition: color 280ms var(--ease), text-decoration-color 280ms var(--ease);
+    }
+
+    .contact__row a:hover {
+      color: var(--gilt-deep);
+      text-decoration-color: currentColor;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(1.5rem);
+      transition: opacity 800ms var(--ease), transform 900ms var(--ease);
+    }
+
+    .reveal.is-visible { opacity: 1; transform: none; }
+
+    @media (max-width: 860px), (prefers-reduced-motion: reduce) {
+      .js .aperture { height: auto; }
+
+      .js .aperture__stage {
+        position: relative;
+        inset: auto;
+        padding: clamp(3.5rem, 11vw, 7rem) 0;
+      }
+
+      .js .aperture__lip { opacity: 0; }
+      .js .aperture__inner { transform: none; }
+      .seam-tick { display: none; }
+    }
+
+    @media (max-width: 860px) {
+      .hero h1 { max-width: 12ch; font-size: clamp(3.5rem, 12.5vw, 6.8rem); }
+
+      .aperture__lede-row {
+        grid-template-columns: 1fr;
+        gap: 1.1rem;
+      }
+
+      .aperture__lede { font-size: clamp(1.5rem, 6.4vw, 2.2rem); }
+
+      .movements {
+        grid-template-columns: 1fr;
+        gap: 2.4rem;
+      }
+
+      .movement p { max-width: 46ch; }
+
+      .section-head {
+        grid-template-columns: minmax(6rem, .35fr) 1.65fr;
+      }
+
+      .gallery__stage {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        min-height: 0;
+      }
+
+      .plate-stack {
+        justify-self: center;
+        width: min(100%, 31rem);
+      }
+
+      .gallery__copy { justify-self: center; width: min(100%, 31rem); }
+      .gallery__counter { text-align: left; }
+
+      .contact__card {
+        grid-template-columns: 1fr;
+        gap: 3.75rem;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .masthead { align-items: flex-start; }
+      .wordmark { gap: .55rem; }
+      .wordmark svg { width: 1.05rem; height: 1.05rem; }
+      .wordmark span { max-width: 9rem; font-size: 1.02rem; line-height: 1.05; letter-spacing: .15em; }
+      .masthead__link {
+        max-width: 9.5rem;
+        font-size: .6rem;
+        line-height: 1.35;
+        letter-spacing: .11em;
+        text-align: right;
+      }
+
+      .hero__shade {
+        background:
+          linear-gradient(180deg, rgba(6,9,7,.62) 0%, transparent 28%),
+          linear-gradient(0deg, rgba(6,9,7,.9) 0%, transparent 67%);
+      }
+
+      .hero__end-vignette {
+        background: radial-gradient(
+          circle clamp(11rem, 56vw, 16rem) at 50% 46%,
+          rgba(5, 8, 6, 0) 0%,
+          rgba(5, 8, 6, .02) 24%,
+          rgba(5, 8, 6, .1) 40%,
+          rgba(5, 8, 6, .32) 62%,
+          rgba(5, 8, 6, .62) 83%,
+          rgba(5, 8, 6, .84) 100%
+        );
+      }
+
+      .hero__content { bottom: 6.25rem; }
+      .hero h1 { font-size: clamp(3rem, 15vw, 5.15rem); line-height: .88; }
+      .scroll-cue { width: 3rem; height: 3rem; }
+      .film-control { font-size: 0; gap: 0; width: 2.75rem; height: 2.75rem; place-content: center; }
+
+      .artefacts { padding-top: 5.75rem; }
+
+      .section-head {
+        grid-template-columns: 1fr;
+        gap: 1.4rem;
+        margin-bottom: 3.25rem;
+      }
+
+      .section-head h2 { font-size: clamp(1.9rem, 7.7vw, 2.65rem); line-height: 1.08; }
+      .plate-stack { width: 100%; }
+      .gallery__title { font-size: clamp(2.65rem, 12vw, 3.8rem); }
+
+      .gallery__nav { align-items: flex-start; flex-wrap: wrap; }
+      .gallery-index { order: 3; width: 100%; margin: .6rem 0 0; }
+
+      .contact__card {
+        padding: 2rem 1.4rem;
+      }
+
+      .contact h2 { margin-top: 2.25rem; }
+
+      .contact__row {
+        grid-template-columns: 1fr;
+        gap: .45rem;
+      }
+
+      .contact__row a {
+        font-size: clamp(1.25rem, 6.2vw, 1.75rem);
+        overflow-wrap: anywhere;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .wordmark span {
+        max-width: 7rem;
+        font-size: .86rem;
+        letter-spacing: .12em;
+      }
+
+      .masthead__link {
+        max-width: 7.9rem;
+        font-size: .53rem;
+        letter-spacing: .09em;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#artefacts">Skip to the artefacts</a>
+
+  <main>
+    <section class="hero bookcloth" id="top" aria-labelledby="hero-title">
+      <div class="hero__film">
+        <!-- Muted + playsinline make autoplay reliable across modern browsers. No loop attribute is set. -->
+        <video id="heroFilm" autoplay muted playsinline preload="auto" aria-label="General Memory introduction film">
+          <source src="assets/GM-landing.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="hero__shade" aria-hidden="true"></div>
+      <div class="hero__end-vignette" aria-hidden="true"></div>
+
+      <header class="masthead">
+        <a class="wordmark" href="#top" aria-label="General Memory, home">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 20V10a8 8 0 0 1 16 0v10M8 20V10a4 4 0 0 1 8 0v10" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+          </svg>
+          <span>General Memory</span>
+        </a>
+        <a class="masthead__link" href="#contact">I'm ready to start the journey</a>
+      </header>
+
+      <div class="hero__content">
+        <h1 id="hero-title">Your life is full of stories.<span>Keep them alive.</span></h1>
+      </div>
+
+      <div class="hero__footer">
+        <a class="scroll-cue" href="#artefacts" aria-label="Open the seam">
+          <svg viewBox="0 0 18 24" fill="none" aria-hidden="true">
+            <path d="M9 1v20M2.5 14.5 9 21l6.5-6.5" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <button class="film-control" id="filmControl" type="button" data-state="playing" aria-label="Pause film">
+          <span class="film-control__icon" aria-hidden="true"></span>
+          <span class="film-control__label">Pause film</span>
+        </button>
+      </div>
+
+      <span class="seam-tick seam-tick--hero" aria-hidden="true"></span>
+    </section>
+
+    <section class="aperture" id="aperture" aria-label="The General Memory experience">
+      <div class="aperture__stage">
+        <div class="aperture__lip aperture__lip--top" aria-hidden="true"></div>
+        <div class="aperture__lip aperture__lip--bottom" aria-hidden="true"></div>
+
+        <div class="aperture__inner">
+          <div class="aperture__lede-row">
+            <p class="aperture__eyebrow">The experience</p>
+            <p class="aperture__lede">General Memory is a private, white-glove experience that helps you hold on to the memories that matter. Through thoughtful interviews and the highest levels of craftsmanship, we turn your life stories into beautiful objects designed to last generations.</p>
+          </div>
+
+          <ol class="movements">
+            <li class="movement">
+              <span class="movement__numeral">I</span>
+              <h3>Remember</h3>
+              <p>We help you reconnect with the old memories that you forgot existed but that remind you of the wonderful life you've lived.</p>
+            </li>
+            <li class="movement">
+              <span class="movement__numeral">II</span>
+              <h3>Recover</h3>
+              <p>Your life stories are spread out all across many photos, letters, and souvenirs. We work with you and your loved ones to consolidate them into a collection that will never go missing again.</p>
+            </li>
+            <li class="movement">
+              <span class="movement__numeral">III</span>
+              <h3>Record</h3>
+              <p>By the end of the journey, you will have a set of objects, custom-built to suit your preferred ways of reminiscing, that will never go missing and which will continue growing with you as you make new memories.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="artefacts bookcloth" id="artefacts" aria-labelledby="artefacts-title">
+      <span class="seam-tick seam-tick--next" aria-hidden="true"></span>
+
+      <header class="section-head reveal">
+        <p class="eyebrow">The artefact</p>
+        <h2 id="artefacts-title">Six studies in cloth, paper, gold and brass.</h2>
+      </header>
+
+      <div class="gallery reveal" aria-roledescription="carousel" aria-label="Artefact material studies">
+        <div class="gallery__stage" id="galleryStage">
+          <div class="plate-stack" id="plateStack">
+            <figure class="plate is-active" data-plate="0" aria-hidden="false">
+              <div class="study study--volume">
+                <div class="volume" aria-hidden="true"></div>
+                <p class="study__note">Material study / bookcloth and gilt</p>
+              </div>
+            </figure>
+
+            <figure class="plate" data-plate="1" aria-hidden="true">
+              <div class="study study--spread">
+                <div class="spread" aria-hidden="true">
+                  <div class="page"><span class="page__title">Before<br>memory fades</span><span class="lines"></span></div>
+                  <div class="page"><div class="page__photo"></div><span class="lines"></span></div>
+                </div>
+                <p class="study__note">Material study / cotton rag paper</p>
+              </div>
+            </figure>
+
+            <figure class="plate" data-plate="2" aria-hidden="true">
+              <div class="study study--gilt">
+                <div class="gilt-title" aria-hidden="true">A life<br>kept</div>
+                <p class="study__note">Material study / gold blocking</p>
+              </div>
+            </figure>
+
+            <figure class="plate" data-plate="3" aria-hidden="true">
+              <div class="study study--folio">
+                <div class="folio" aria-hidden="true">
+                  <div class="folio__sheet"><div class="folio__image"></div><span class="folio__rule"></span></div>
+                  <div class="folio__sheet"><div class="folio__image"></div><span class="folio__rule"></span></div>
+                  <div class="folio__sheet"><div class="folio__image"></div><span class="folio__rule"></span></div>
+                </div>
+                <p class="study__note">Material study / restored prints</p>
+              </div>
+            </figure>
+
+            <figure class="plate" data-plate="4" aria-hidden="true">
+              <div class="study study--case">
+                <div class="case" aria-hidden="true">
+                  <div class="case__lid"></div>
+                  <div class="case__base"></div>
+                </div>
+                <p class="study__note">Material study / fitted clamshell</p>
+              </div>
+            </figure>
+
+            <figure class="plate" data-plate="5" aria-hidden="true">
+              <div class="study study--archive">
+                <div class="archive-mark" aria-hidden="true">
+                  <span class="archive-mark__brand">General Memory</span>
+                  <span class="archive-mark__number">Private archive · No. 001</span>
+                </div>
+                <p class="study__note">Material study / engraved brass</p>
+              </div>
+            </figure>
+          </div>
+
+          <div class="gallery__copy" aria-live="polite">
+            <p class="gallery__number" id="plateNumber">I</p>
+            <h3 class="gallery__title" id="plateTitle">The volume</h3>
+            <p class="gallery__description" id="plateDescription">Quarter-bound in cloth with a leather spine, made once for one family.</p>
+
+            <nav class="gallery__nav" aria-label="Move between artefact studies">
+              <button class="gallery-arrow" id="platePrev" type="button" aria-label="Previous artefact" disabled>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="gallery-arrow" id="plateNext" type="button" aria-label="Next artefact">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 4 8 8-8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="gallery-index" id="plateIndex"></div>
+            </nav>
+          </div>
+        </div>
+
+        <p class="gallery__counter"><span id="currentCount">01</span> / 06 &nbsp;·&nbsp; General Memory</p>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="contact__card reveal">
+        <div class="contact__identity">
+          <p class="contact__mark">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 20V10a8 8 0 0 1 16 0v10M8 20V10a4 4 0 0 1 8 0v10" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+            </svg>
+            <span>Private commissions / Singapore</span>
+          </p>
+          <h2 id="contact-title">General<br>Memory</h2>
+        </div>
+
+        <dl class="contact__details">
+          <div class="contact__row">
+            <dt>Email</dt>
+            <dd><a href="mailto:hello@generalmemory.co">hello@generalmemory.co</a></dd>
+          </div>
+          <div class="contact__row">
+            <dt>WhatsApp</dt>
+            <dd><a href="https://wa.me/6581261788" target="_blank" rel="noopener" aria-label="Message General Memory on WhatsApp at +65 8126 1788">+65 8126 1788</a></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const hero = document.querySelector('.hero');
+    const film = document.querySelector('#heroFilm');
+    const filmControl = document.querySelector('#filmControl');
+    const filmLabel = filmControl.querySelector('.film-control__label');
+
+    function setFilmControl(state, label, ariaLabel) {
+      filmControl.dataset.state = state;
+      filmLabel.textContent = label;
+      filmControl.setAttribute('aria-label', ariaLabel);
+    }
+
+    filmControl.addEventListener('click', () => {
+      if (film.ended) {
+        film.currentTime = 0;
+        film.play();
+        setFilmControl('playing', 'Pause film', 'Pause film');
+      } else if (film.paused) {
+        film.play();
+        setFilmControl('playing', 'Pause film', 'Pause film');
+      } else {
+        film.pause();
+        setFilmControl('paused', 'Play film', 'Play film');
+      }
+    });
+
+    film.addEventListener('ended', () => {
+      hero.classList.add('is-ended');
+      setFilmControl('paused', 'Replay film', 'Replay film');
+    });
+
+    film.addEventListener('play', () => {
+      hero.classList.remove('is-ended');
+      setFilmControl('playing', 'Pause film', 'Pause film');
+    });
+    film.addEventListener('pause', () => {
+      if (!film.ended) setFilmControl('paused', 'Play film', 'Play film');
+    });
+
+    // Explicit play covers browsers that wait for script execution before honoring autoplay.
+    window.addEventListener('load', () => film.play().catch(() => {
+      setFilmControl('paused', 'Play film', 'Play film');
+    }), { once: true });
+
+    /* The parting.
+       At rest the artefacts section is held directly beneath the hero, so the
+       two meet at a single seam. Scrolling through the aperture section widens
+       the distance between the hero's bottom edge and the artefacts' top edge,
+       symmetrically about the middle of the screen, up to a full viewport —
+       then closes it again and hands the page back to ordinary scrolling.
+       Every position below is computed from scrollY alone. */
+    const aperture = document.querySelector('#aperture');
+    const heroSection = document.querySelector('.hero');
+    const nextSection = document.querySelector('#artefacts');
+
+    if (aperture && heroSection && nextSection) {
+      const root = document.documentElement;
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const wide = window.matchMedia('(min-width: 861px)');
+      let queued = false;
+      let resting = false;
+
+      const clamp01 = value => Math.min(1, Math.max(0, value));
+
+      const smoothstep = (from, to, value) => {
+        const t = clamp01((value - from) / (to - from));
+        return t * t * (3 - 2 * t);
+      };
+
+      const rest = () => {
+        if (resting) return;
+        resting = true;
+        heroSection.style.transform = '';
+        nextSection.style.transform = '';
+        root.style.setProperty('--open', '0');
+        root.style.setProperty('--copy', '1');
+      };
+
+      const update = () => {
+        queued = false;
+
+        if (still.matches || !wide.matches) {
+          rest();
+          return;
+        }
+
+        resting = false;
+
+        const viewport = window.innerHeight;
+        const travel = aperture.offsetHeight;
+        /* Progress starts the moment the seam reaches the middle of the screen. */
+        const begins = heroSection.offsetTop + heroSection.offsetHeight - viewport / 2;
+        const progress = travel > 0
+          ? clamp01((window.scrollY - begins) / travel)
+          : 0;
+
+        const open = clamp01(smoothstep(0, .26, progress) - smoothstep(.74, 1, progress));
+        const half = (open * viewport) / 2;
+        const held = progress * travel;
+
+        heroSection.style.transform = 'translate3d(0,' + (held - half).toFixed(2) + 'px,0)';
+        nextSection.style.transform = 'translate3d(0,' + (held - travel + half).toFixed(2) + 'px,0)';
+
+        root.style.setProperty('--open', open.toFixed(4));
+        root.style.setProperty('--copy', clamp01(
+          smoothstep(.07, .28, progress) - smoothstep(.72, .90, progress)
+        ).toFixed(4));
+      };
+
+      const request = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(update);
+      };
+
+      window.addEventListener('scroll', request, { passive: true });
+      window.addEventListener('resize', request);
+      wide.addEventListener('change', request);
+      still.addEventListener('change', request);
+      update();
+    }
+
+    const studies = [
+      { numeral: 'I', title: 'The volume', description: 'Quarter-bound in cloth with a leather spine, made once for one family.' },
+      { numeral: 'II', title: 'The pages', description: 'Cotton paper, generously proportioned and sewn so every remembered detail lies open.' },
+      { numeral: 'III', title: 'The title', description: 'Blocked in gold: a name and a life pressed permanently into the cloth.' },
+      { numeral: 'IV', title: 'The folio', description: 'Restored photographs printed on cotton rag and gathered in their own portfolio.' },
+      { numeral: 'V', title: 'The case', description: 'A clamshell made to fit the finished volume and protect it between readings.' },
+      { numeral: 'VI', title: 'The archive', description: 'An engraved plate accompanies a private digital archive for the generations that follow.' }
+    ];
+
+    const plates = Array.from(document.querySelectorAll('.plate'));
+    const plateIndex = document.querySelector('#plateIndex');
+    const plateNumber = document.querySelector('#plateNumber');
+    const plateTitle = document.querySelector('#plateTitle');
+    const plateDescription = document.querySelector('#plateDescription');
+    const currentCount = document.querySelector('#currentCount');
+    const previous = document.querySelector('#platePrev');
+    const next = document.querySelector('#plateNext');
+    const stage = document.querySelector('#galleryStage');
+    let activePlate = 0;
+    let touchStart = null;
+
+    studies.forEach((study, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = study.numeral;
+      button.setAttribute('aria-label', `Show ${study.title}`);
+      button.setAttribute('aria-current', String(index === 0));
+      button.addEventListener('click', () => showPlate(index));
+      plateIndex.appendChild(button);
+    });
+
+    function showPlate(index) {
+      activePlate = Math.max(0, Math.min(index, studies.length - 1));
+      const study = studies[activePlate];
+
+      plates.forEach((plate, i) => {
+        const isActive = i === activePlate;
+        plate.classList.toggle('is-active', isActive);
+        plate.setAttribute('aria-hidden', String(!isActive));
+      });
+
+      Array.from(plateIndex.children).forEach((button, i) => {
+        button.setAttribute('aria-current', String(i === activePlate));
+      });
+
+      plateNumber.textContent = study.numeral;
+      plateTitle.textContent = study.title;
+      plateDescription.textContent = study.description;
+      currentCount.textContent = String(activePlate + 1).padStart(2, '0');
+      previous.disabled = activePlate === 0;
+      next.disabled = activePlate === studies.length - 1;
+    }
+
+    previous.addEventListener('click', () => showPlate(activePlate - 1));
+    next.addEventListener('click', () => showPlate(activePlate + 1));
+
+    stage.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') showPlate(activePlate - 1);
+      if (event.key === 'ArrowRight') showPlate(activePlate + 1);
+    });
+
+    stage.addEventListener('touchstart', event => {
+      touchStart = event.changedTouches[0].clientX;
+    }, { passive: true });
+
+    stage.addEventListener('touchend', event => {
+      if (touchStart === null) return;
+      const distance = event.changedTouches[0].clientX - touchStart;
+      if (Math.abs(distance) > 48) showPlate(activePlate + (distance < 0 ? 1 : -1));
+      touchStart = null;
+    }, { passive: true });
+
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: .16 });
+      document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+    } else {
+      document.querySelectorAll('.reveal').forEach(element => element.classList.add('is-visible'));
+    }
+  </script>
+</body>
+</html>
