@@ -36,6 +36,9 @@
       /* Set by the parting mechanic; these defaults are the resting state. */
       --open: 0;
       --copy: 1;
+      --fit: 1;
+      --shift: 0px;
+      --vph: 100vh;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -56,6 +59,7 @@
       font-weight: 300;
       line-height: 1.65;
       -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
       text-rendering: optimizeLegibility;
     }
 
@@ -171,6 +175,8 @@
       display: inline-flex;
       align-items: center;
       gap: .8rem;
+      margin: -.55rem 0;
+      padding: .55rem 0;
       color: var(--bone);
       text-decoration: none;
     }
@@ -350,7 +356,12 @@
       align-items: center;
       overflow: hidden;
       padding: clamp(3.5rem, 11vw, 7rem) 0;
-      background: radial-gradient(125% 92% at 50% 50%, #1d2822 0%, #151c18 47%, #0b100e 100%);
+      color: #293029;
+      background-color: #d8c9a5;
+      background-image: url("assets/general-secret-letter-parchment.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
     }
 
     /* Light spilling from inside, along whichever edge is currently open */
@@ -378,7 +389,7 @@
       position: absolute;
       left: 50%;
       z-index: 6;
-      width: calc(5rem + var(--open) * 17rem);
+      width: min(calc(5rem + var(--open) * 17rem), 78vw);
       height: 1px;
       pointer-events: none;
       background: linear-gradient(90deg, transparent, rgba(192,154,87,.9), transparent);
@@ -395,7 +406,8 @@
       width: 100%;
       padding: 0 var(--gutter);
       opacity: var(--copy);
-      transform: translate3d(0, calc((1 - var(--copy)) * 1.25rem), 0);
+      transform: translate3d(0, var(--shift), 0) scale(var(--fit));
+      transform-origin: 50% 50%;
     }
 
     .aperture__lede-row {
@@ -407,7 +419,7 @@
 
     .aperture__eyebrow {
       margin: .55rem 0 0;
-      color: var(--gilt);
+      color: #6b4c22;
       font-size: .7rem;
       letter-spacing: .2em;
       text-transform: uppercase;
@@ -445,13 +457,13 @@
       right: 0;
       left: 0;
       height: 1px;
-      background: linear-gradient(90deg, var(--gilt) 0%, rgba(192,154,87,.1) 100%);
+      background: linear-gradient(90deg, #765729 0%, rgba(107,76,34,.12) 100%);
     }
 
     .movement__numeral {
       display: block;
       margin-bottom: .5rem;
-      color: var(--gilt);
+      color: #6b4c22;
       font-family: var(--display);
       font-size: .92rem;
       letter-spacing: .24em;
@@ -471,19 +483,21 @@
     .movement p {
       max-width: 40ch;
       margin: .9rem 0 0;
-      color: var(--muted);
+      color: #514b3f;
       font-size: clamp(.85rem, min(1vw, 1.7vh), .98rem);
       line-height: 1.64;
     }
 
     /* With the script running, the section becomes scroll distance and the
        stage is lifted out of flow to sit behind the two parting halves. */
-    .js .aperture { height: 280vh; }
+    .js .aperture { height: calc(var(--vph) * 1.5); }
 
     .js .aperture__stage {
       position: fixed;
-      inset: 0;
+      inset: 0 0 auto;
       z-index: 1;
+      height: 100vh;
+      height: 100dvh;
       padding: clamp(2.5rem, 6vh, 5rem) 0;
     }
 
@@ -493,7 +507,7 @@
     .artefacts {
       position: relative;
       z-index: 2;
-      min-height: 100vh;
+      min-height: var(--vph);
       border-top: 1px solid rgba(192,154,87, calc(.16 + var(--open) * .52));
       box-shadow:
         0 -1.4rem 3.4rem rgba(0,0,0,.66),
@@ -1063,7 +1077,7 @@
       grid-template-columns: 6.5rem minmax(0, 1fr);
       gap: 1.25rem;
       align-items: baseline;
-      padding: 1.2rem 0;
+      padding: .6rem 0;
       border-bottom: 1px solid rgba(17,23,19,.2);
     }
 
@@ -1077,6 +1091,8 @@
     .contact__row dd { margin: 0; min-width: 0; }
 
     .contact__row a {
+      display: inline-block;
+      padding: .7rem 0;
       color: var(--dark);
       font-family: var(--display);
       font-size: clamp(1.35rem, 2.1vw, 2rem);
@@ -1093,6 +1109,8 @@
       text-decoration-color: currentColor;
     }
 
+    .is-parting { will-change: transform; }
+
     .reveal {
       opacity: 0;
       transform: translateY(1.5rem);
@@ -1101,12 +1119,13 @@
 
     .reveal.is-visible { opacity: 1; transform: none; }
 
-    @media (max-width: 860px), (prefers-reduced-motion: reduce) {
+    @media (prefers-reduced-motion: reduce) {
       .js .aperture { height: auto; }
 
       .js .aperture__stage {
         position: relative;
         inset: auto;
+        height: auto;
         padding: clamp(3.5rem, 11vw, 7rem) 0;
       }
 
@@ -1115,22 +1134,53 @@
       .seam-tick { display: none; }
     }
 
+    @media (max-width: 700px) {
+      .aperture__stage {
+        background-image: url("assets/general-secret-letter-parchment-sm.jpg");
+      }
+    }
+
     @media (max-width: 860px) {
       .hero h1 { max-width: 12ch; font-size: clamp(3.5rem, 12.5vw, 6.8rem); }
 
+      .js .aperture__stage { padding: clamp(1.25rem, 4vh, 3.25rem) 0; }
+
       .aperture__lede-row {
         grid-template-columns: 1fr;
-        gap: 1.1rem;
+        gap: .7rem;
       }
 
-      .aperture__lede { font-size: clamp(1.5rem, 6.4vw, 2.2rem); }
+      .aperture__eyebrow { margin-top: 0; }
+
+      /* Every size below is governed by the shorter axis as well as the wider
+         one, so the composition fits the aperture on a small phone without a
+         breakpoint for each handset. */
+      .aperture__lede {
+        font-size: clamp(1rem, min(5.3vw, 2.55vh), 2.05rem);
+        line-height: 1.18;
+      }
 
       .movements {
         grid-template-columns: 1fr;
-        gap: 2.4rem;
+        gap: clamp(.8rem, 2.3vh, 2rem);
+        margin-top: clamp(1rem, 3.4vh, 2.9rem);
       }
 
-      .movement p { max-width: 46ch; }
+      .movement { padding-top: clamp(.55rem, 1.6vh, 1.15rem); }
+
+      .movement__numeral {
+        margin-bottom: .28rem;
+        font-size: clamp(.68rem, min(3vw, 1.4vh), .82rem);
+      }
+
+      .movement h3 { font-size: clamp(.88rem, min(4.5vw, 2.15vh), 1.65rem); }
+
+      .movement p {
+        max-width: 54ch;
+        margin-top: .45rem;
+        font-size: clamp(.72rem, min(3.4vw, 1.65vh), .95rem);
+        line-height: 1.48;
+      }
 
       .section-head {
         grid-template-columns: minmax(6rem, .35fr) 1.65fr;
@@ -1160,13 +1210,21 @@
       .masthead { align-items: flex-start; }
       .wordmark { gap: .55rem; }
       .wordmark svg { width: 1.05rem; height: 1.05rem; }
-      .wordmark span { max-width: 9rem; font-size: 1.02rem; line-height: 1.05; letter-spacing: .15em; }
+      .wordmark span { max-width: 8.5rem; font-size: .96rem; line-height: 1.05; letter-spacing: .14em; }
       .masthead__link {
-        max-width: 9.5rem;
-        font-size: .6rem;
-        line-height: 1.35;
-        letter-spacing: .11em;
+        max-width: 9.75rem;
+        padding: .5rem 0;
+        font-size: .7rem;
+        line-height: 1.42;
+        letter-spacing: .1em;
         text-align: right;
+      }
+
+      /* No hover on touch, so the rule under the call to action is drawn in full. */
+      .masthead__link::after {
+        bottom: -.1rem;
+        background: var(--gilt);
+        transform: scaleX(1);
       }
 
       .hero__shade {
@@ -1204,8 +1262,10 @@
       .plate-stack { width: 100%; }
       .gallery__title { font-size: clamp(2.65rem, 12vw, 3.8rem); }
 
-      .gallery__nav { align-items: flex-start; flex-wrap: wrap; }
+      .gallery__nav { align-items: flex-start; flex-wrap: wrap; gap: .5rem; }
       .gallery-index { order: 3; width: 100%; margin: .6rem 0 0; }
+      .gallery-index button { min-width: 2.7rem; min-height: 2.85rem; }
+      .gallery-arrow { width: 3rem; height: 3rem; }
 
       .contact__card {
         padding: 2rem 1.4rem;
@@ -1226,16 +1286,57 @@
 
     @media (max-width: 380px) {
       .wordmark span {
-        max-width: 7rem;
-        font-size: .86rem;
-        letter-spacing: .12em;
+        max-width: 6.75rem;
+        font-size: .82rem;
+        letter-spacing: .1em;
       }
 
       .masthead__link {
-        max-width: 7.9rem;
-        font-size: .53rem;
-        letter-spacing: .09em;
+        max-width: 7.75rem;
+        font-size: .63rem;
+        letter-spacing: .07em;
       }
+    }
+
+    /* Handsets held sideways: three columns again, since height is the scarce
+       axis there and the row is a third of the height of the stack. */
+    @media (max-width: 1040px) and (min-width: 600px) and (max-height: 640px) {
+      .hero h1 { max-width: 18ch; font-size: clamp(2rem, 7.6vh, 3.6rem); }
+      .hero__content { bottom: clamp(3.25rem, 9vh, 5rem); }
+
+      .aperture__lede-row {
+        grid-template-columns: minmax(5.5rem, .5fr) minmax(0, 4fr);
+        gap: clamp(1rem, 3vw, 2rem);
+      }
+
+      .aperture__eyebrow { margin-top: .25rem; }
+      .aperture__lede { font-size: clamp(1rem, 4.4vh, 1.5rem); }
+
+      .movements {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: clamp(1rem, 3vw, 2.5rem);
+        margin-top: clamp(1rem, 3.2vh, 1.9rem);
+      }
+
+      .movement p { max-width: 34ch; font-size: clamp(.7rem, 2vh, .84rem); }
+
+      .gallery__stage {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: clamp(1.5rem, 5vw, 4rem);
+      }
+
+      .plate-stack { justify-self: end; width: min(100%, 50vh); }
+      .gallery__copy { justify-self: start; width: auto; }
+      .gallery__title { font-size: clamp(1.75rem, 9vh, 2.75rem); }
+      .gallery__nav { flex-wrap: wrap; margin-top: clamp(1rem, 4vh, 2rem); }
+      .gallery-index { order: 3; width: 100%; margin: .45rem 0 0; }
+    }
+
+    /* Below this the copy column is too narrow to hold the arrows and the six
+       numerals on one line, so the numerals take a line of their own. */
+    @media (max-width: 1200px) {
+      .gallery__nav { flex-wrap: wrap; }
+      .gallery-index { order: 3; width: 100%; margin: .55rem 0 0; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1258,9 +1359,32 @@
     <section class="hero bookcloth" id="top" aria-labelledby="hero-title">
       <div class="hero__film">
         <!-- Muted + playsinline make autoplay reliable across modern browsers. No loop attribute is set. -->
-        <video id="heroFilm" autoplay muted playsinline preload="auto" aria-label="General Memory introduction film">
-          <source src="assets/GM-landing.mp4" type="video/mp4">
+        <video id="heroFilm" autoplay muted playsinline preload="auto"
+               poster="assets/GM-landing-poster.jpg" aria-label="General Memory introduction film">
+          <source id="filmSource" src="assets/GM-landing.mp4" type="video/mp4">
         </video>
+        <script>
+          /* Chosen before the browser commits to the 1080p master: a handset
+             gets a 1.4MB cut instead of 13MB, and a phone in data-saver mode
+             gets the still frame with the play control, not an autoplay. */
+          (function () {
+            var film = document.getElementById('heroFilm');
+            var source = document.getElementById('filmSource');
+            var connection = navigator.connection || {};
+
+            if (connection.saveData) {
+              window.__gmHoldFilm = true;
+              film.removeAttribute('autoplay');
+              film.preload = 'none';
+              return;
+            }
+
+            if (window.matchMedia('(max-width: 700px)').matches) {
+              source.src = 'assets/GM-landing-mobile.mp4';
+              film.load();
+            }
+          })();
+        </script>
       </div>
       <div class="hero__shade" aria-hidden="true"></div>
       <div class="hero__end-vignette" aria-hidden="true"></div>
@@ -1480,9 +1604,13 @@
     });
 
     // Explicit play covers browsers that wait for script execution before honoring autoplay.
-    window.addEventListener('load', () => film.play().catch(() => {
+    if (window.__gmHoldFilm) {
       setFilmControl('paused', 'Play film', 'Play film');
-    }), { once: true });
+    } else {
+      window.addEventListener('load', () => film.play().catch(() => {
+        setFilmControl('paused', 'Play film', 'Play film');
+      }), { once: true });
+    }
 
     /* The parting.
        At rest the artefacts section is held directly beneath the hero, so the
@@ -1490,17 +1618,45 @@
        the distance between the hero's bottom edge and the artefacts' top edge,
        symmetrically about the middle of the screen, up to a full viewport —
        then closes it again and hands the page back to ordinary scrolling.
-       Every position below is computed from scrollY alone. */
+
+       Two rules govern what you see through the gap, at every width:
+       the copy is legible from the moment the seam breaks, not once the gap is
+       wide; and the composition is anchored on the opening sentence while the
+       gap is narrow, drifting to its own centre as the rest is revealed. It is
+       also scaled, once, to whatever the viewport can hold, so nothing is ever
+       cropped when the aperture is fully open — which is what lets a phone run
+       exactly the same mechanic as a desktop.
+
+       Every position is computed from scrollY alone, so nothing can drift out
+       of register however fast the page is scrolled. */
     const aperture = document.querySelector('#aperture');
     const heroSection = document.querySelector('.hero');
     const nextSection = document.querySelector('#artefacts');
 
     if (aperture && heroSection && nextSection) {
       const root = document.documentElement;
+      const stage = aperture.querySelector('.aperture__stage');
+      const inner = aperture.querySelector('.aperture__inner');
+      const ledeRow = aperture.querySelector('.aperture__lede-row');
       const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const wide = window.matchMedia('(min-width: 861px)');
+
       let queued = false;
       let resting = false;
+      let remeasure = false;
+      let begins = 0;
+      let travel = 0;
+      let fit = 1;
+      let ledeShift = 0;
+      let lastWidth = window.innerWidth;
+      let progress = 0;
+      let parting = false;
+
+      const setParting = state => {
+        if (state === parting) return;
+        parting = state;
+        heroSection.classList.toggle('is-parting', state);
+        nextSection.classList.toggle('is-parting', state);
+      };
 
       const clamp01 = value => Math.min(1, Math.max(0, value));
 
@@ -1512,16 +1668,44 @@
       const rest = () => {
         if (resting) return;
         resting = true;
+        setParting(false);
         heroSection.style.transform = '';
         nextSection.style.transform = '';
         root.style.setProperty('--open', '0');
         root.style.setProperty('--copy', '1');
+        root.style.setProperty('--fit', '1');
+        root.style.setProperty('--shift', '0px');
+      };
+
+      /* Geometry is cached rather than read per frame, so the browser chrome
+         appearing and disappearing on a phone cannot make the page twitch. */
+      const measure = () => {
+        const viewport = window.innerHeight;
+        root.style.setProperty('--vph', viewport + 'px');
+        lastWidth = window.innerWidth;
+        remeasure = false;
+
+        travel = aperture.offsetHeight;
+        begins = heroSection.offsetTop + heroSection.offsetHeight - viewport / 2;
+
+        /* offsetHeight is layout, so the live transform does not disturb it. */
+        const composition = inner.offsetHeight;
+        const pad = parseFloat(getComputedStyle(stage).paddingTop) || 0;
+        const room = Math.max(160, viewport - pad * 2);
+
+        fit = composition > 0 ? Math.min(1, room / composition) : 1;
+        fit = Math.max(.56, fit);
+
+        const ledeCentre = ledeRow
+          ? ledeRow.offsetTop + ledeRow.offsetHeight / 2
+          : composition / 2;
+        ledeShift = (composition / 2 - ledeCentre) * fit;
       };
 
       const update = () => {
         queued = false;
 
-        if (still.matches || !wide.matches) {
+        if (still.matches) {
           rest();
           return;
         }
@@ -1529,24 +1713,30 @@
         resting = false;
 
         const viewport = window.innerHeight;
-        const travel = aperture.offsetHeight;
-        /* Progress starts the moment the seam reaches the middle of the screen. */
-        const begins = heroSection.offsetTop + heroSection.offsetHeight - viewport / 2;
-        const progress = travel > 0
+        progress = travel > 0
           ? clamp01((window.scrollY - begins) / travel)
           : 0;
 
-        const open = clamp01(smoothstep(0, .26, progress) - smoothstep(.74, 1, progress));
+        /* Outside the effect nothing is displaced, so this is the only moment
+           at which the cached geometry can be refreshed without a visible jump. */
+        if (remeasure && (progress <= 0 || progress >= 1)) measure();
+        setParting(progress > 0 && progress < 1);
+
+        const open = clamp01(smoothstep(0, .20, progress) - smoothstep(.80, 1, progress));
         const half = (open * viewport) / 2;
         const held = progress * travel;
 
         heroSection.style.transform = 'translate3d(0,' + (held - half).toFixed(2) + 'px,0)';
         nextSection.style.transform = 'translate3d(0,' + (held - travel + half).toFixed(2) + 'px,0)';
 
+        /* Anchored on the opening sentence at first, on the whole composition
+           once the aperture is wide. */
+        const settled = smoothstep(.18, .92, open);
+
         root.style.setProperty('--open', open.toFixed(4));
-        root.style.setProperty('--copy', clamp01(
-          smoothstep(.07, .28, progress) - smoothstep(.72, .90, progress)
-        ).toFixed(4));
+        root.style.setProperty('--copy', smoothstep(.015, .17, open).toFixed(4));
+        root.style.setProperty('--fit', fit.toFixed(4));
+        root.style.setProperty('--shift', (ledeShift * (1 - settled)).toFixed(2) + 'px');
       };
 
       const request = () => {
@@ -1555,10 +1745,29 @@
         requestAnimationFrame(update);
       };
 
+      const resized = () => {
+        if (window.innerWidth !== lastWidth) {
+          measure();
+        } else {
+          /* Height-only: almost always the address bar. Defer it. */
+          remeasure = true;
+        }
+        request();
+      };
+
       window.addEventListener('scroll', request, { passive: true });
-      window.addEventListener('resize', request);
-      wide.addEventListener('change', request);
-      still.addEventListener('change', request);
+      window.addEventListener('resize', resized);
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => { measure(); request(); }, 260);
+      });
+      still.addEventListener('change', () => { measure(); request(); });
+      window.addEventListener('load', () => { measure(); request(); });
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => { measure(); request(); });
+      }
+
+      measure();
       update();
     }
 
