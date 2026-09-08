@@ -39,6 +39,10 @@
       --fit: 1;
       --shift: 0px;
       --vph: 100vh;
+
+      /* How much scrolling the parting spans, in viewports. Raise it to make
+         the seam harder to get through, lower it to make it quicker. */
+      --aperture-travel: 2.2;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -490,7 +494,7 @@
 
     /* With the script running, the section becomes scroll distance and the
        stage is lifted out of flow to sit behind the two parting halves. */
-    .js .aperture { height: var(--vph); }
+    .js .aperture { height: calc(var(--vph) * var(--aperture-travel)); }
 
     .js .aperture__stage {
       position: fixed;
@@ -1038,7 +1042,7 @@
 
     /* The parting.
        At rest the artefacts section is held directly beneath the hero, so the
-       two meet at a single seam. Scrolling through the aperture section widens
+       two meet at a single seam. Moving through the aperture section widens
        the distance between the hero's bottom edge and the artefacts' top edge,
        symmetrically about the middle of the screen, up to a full viewport —
        then closes it again and hands the page back to ordinary scrolling.
@@ -1051,8 +1055,16 @@
        cropped when the aperture is fully open — which is what lets a phone run
        exactly the same mechanic as a desktop.
 
-       Every position is computed from scrollY alone, so nothing can drift out
-       of register however fast the page is scrolled. */
+       The section catches the page. Inside it the wheel, the finger and the
+       keyboard are taken over and converted to travel by hand, at a gain that
+       falls as the input gets faster, so a violent flick cannot throw the seam
+       open in a frame: it is arrested at the seam and has to be scrolled
+       through. Because the page is moved and the two halves are placed in the
+       same task, they cannot fall out of register, which is what removes the
+       stutter at the edges of the screen.
+
+       Every position is still a pure function of scroll position, so the state
+       is recoverable from scrollY alone whatever the browser does to it. */
     const aperture = document.querySelector('#aperture');
     const heroSection = document.querySelector('.hero');
     const nextSection = document.querySelector('#artefacts');
@@ -1064,16 +1076,44 @@
       const ledeRow = aperture.querySelector('.aperture__lede-row');
       const still = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+      /* Resistance. V0 is the input velocity, in px/s, at which a scroll is
+         halved. Slow scrubbing passes through almost untouched, so the seam
+         answers the smallest movement; fast input is compressed towards a
+         ceiling of about GAIN x V0 px/s however many pixels the trackpad
+         throws at it, so a flick opens the aperture at a controlled pace and
+         runs out before it can carry the reader past the section.
+         The distance the section spans is --aperture-travel, in viewports. */
+      const V0 = 1500;
+      const WHEEL_GAIN = 1;
+      const TOUCH_GAIN = 1.6;
+      const WHEEL_CAP = 90;   // ceiling on any single wheel event, in px
+      const RATE = 1900;      // hard ceiling on travel, px per second
+      const FAST = 34;        // px in one event: arriving faster than this is
+                              // a fling, and is caught at the seam
+      const CAUGHT = 300;     // ms the seam holds against it
+      const HELD = .1;        // what is let through while it does
+      const SLIP = 110;       // how far a scroll this script did not author
+                              // may carry into the section before it is caught
+
       let queued = false;
       let resting = false;
       let remeasure = false;
       let begins = 0;
       let travel = 0;
+      let ends = 0;
       let fit = 1;
       let ledeShift = 0;
       let lastWidth = window.innerWidth;
       let progress = 0;
       let parting = false;
+      let stamp = 0;          // time of the last honoured input
+      let authored = -1;      // the last scroll position this script set
+      let lastY = window.scrollY;
+      let bypass = 0;         // deliberate jumps: skip link, Home, End
+      let touchY = 0;
+      let touching = false;
+      let arrest = 0;         // fast input is held at the seam until this time
+      let flung = 0;          // a touch gesture ended this recently
 
       const setParting = state => {
         if (state === parting) return;
@@ -1089,10 +1129,156 @@
         return t * t * (3 - 2 * t);
       };
 
+      /* How far open the aperture is, as a function of position through the
+         section: a single peak with no plateau, so there is no stretch of the
+         section in which scrolling does nothing. Eased to nothing where it
+         meets ordinary scrolling at either end, and at its steepest at the
+         top, so a small scroll away from fully open closes it at once and in
+         whichever direction it was given. */
+      const shape = p => {
+        const u = 1 - Math.abs(p * 2 - 1);
+        return u * u * (2 - u);
+      };
+
+      const running = () => !still.matches && travel > 0;
+
+      const inside = y => y > begins + .5 && y < ends - .5;
+
+      /* scroll-behavior is smooth on the root, which would otherwise animate
+         every position this script sets. */
+      const jump = y => {
+        const to = Math.max(0, y);
+        try {
+          window.scrollTo({ top: to, left: 0, behavior: 'instant' });
+        } catch (error) {
+          const prior = root.style.scrollBehavior;
+          root.style.scrollBehavior = 'auto';
+          window.scrollTo(0, to);
+          root.style.scrollBehavior = prior;
+        }
+      };
+
+      const setScroll = y => {
+        jump(y);
+        authored = window.scrollY;
+        lastY = authored;
+        update();
+      };
+
+      /* Raw input in, section travel out. */
+      const meter = (raw, gain) => {
+        const now = performance.now();
+        const dt = Math.min(120, Math.max(4, now - stamp)) / 1000;
+        stamp = now;
+
+        const honoured = Math.sign(raw) * Math.min(Math.abs(raw), WHEEL_CAP);
+        const speed = Math.abs(honoured) / dt;
+        let move = honoured * gain * (V0 / (V0 + speed));
+        if (now < arrest) move *= HELD;
+        const limit = RATE * dt;
+        return Math.max(-limit, Math.min(limit, move));
+      };
+
+      /* True when this event is the one that reaches the seam, so the page can
+         be arrested there rather than being carried through by the remainder. */
+      const arriving = (y, raw) =>
+        (raw > 0 && y <= begins + .5 && y + raw > begins) ||
+        (raw < 0 && y >= ends - .5 && y + raw < ends);
+
+      const drive = (raw, gain) => {
+        const y = window.scrollY;
+        const held = inside(y);
+        if (!held && !arriving(y, raw)) return false;
+        /* Arriving at speed: the page is stopped at the seam and the front of
+           the fling is spent against it, so the aperture is opened by what the
+           reader does next rather than by the momentum that got them here. */
+        if (!held && Math.abs(raw) > FAST) arrest = performance.now() + CAUGHT;
+        const from = held ? y : (raw > 0 ? begins : ends);
+        setScroll(from + meter(raw, gain));
+        return true;
+      };
+
+      const onWheel = event => {
+        if (!running() || event.ctrlKey) return;
+        let raw = event.deltaY;
+        if (event.deltaMode === 1) raw *= 16;
+        else if (event.deltaMode === 2) raw *= window.innerHeight;
+        if (!raw) return;
+        if (drive(raw, WHEEL_GAIN)) event.preventDefault();
+      };
+
+      const onTouchStart = event => {
+        touching = running() && event.touches.length === 1;
+        if (!touching) return;
+        touchY = event.touches[0].clientY;
+        stamp = performance.now();
+      };
+
+      const onTouchMove = event => {
+        if (!touching || !running() || event.touches.length !== 1) return;
+        const point = event.touches[0].clientY;
+        const raw = touchY - point;
+        if (!raw) return;
+        const y = window.scrollY;
+        if (!inside(y) && !arriving(y, raw)) return;
+        if (event.cancelable) event.preventDefault();
+        touchY = point;
+        drive(raw, TOUCH_GAIN);
+      };
+
+      const onTouchEnd = () => {
+        touching = false;
+        flung = performance.now() + 2600;
+      };
+
+      const onKey = event => {
+        if (!running() || event.metaKey || event.altKey || event.ctrlKey) return;
+        if (event.key === 'Home' || event.key === 'End') {
+          bypass = performance.now() + 1600;
+          return;
+        }
+        const target = event.target;
+        if (target && (target.isContentEditable ||
+            /^(input|textarea|select|button|a)$/i.test(target.tagName))) return;
+
+        let step = 0;
+        if (event.key === 'ArrowDown') step = travel * .07;
+        else if (event.key === 'ArrowUp') step = travel * -.07;
+        else if (event.key === 'PageDown') step = travel * .26;
+        else if (event.key === 'PageUp') step = travel * -.26;
+        else if (event.key === ' ' || event.key === 'Spacebar') step = travel * (event.shiftKey ? -.26 : .26);
+        if (!step) return;
+
+        const y = window.scrollY;
+        if (y <= begins - 1 || y >= ends + 1) return;
+        event.preventDefault();
+        setScroll(y + step);
+      };
+
+      /* The one thing drive() cannot intercept: the momentum a phone keeps
+         applying after the finger has left the glass. Caught at whichever edge
+         it arrived by, which is the arrest a fast wheel gets on a desktop.
+         Deliberately narrow — anything else that moves the page, a scrollbar,
+         an anchor, the position a browser restores, is left alone. */
+      const guard = () => {
+        const y = window.scrollY;
+        const now = performance.now();
+        if (!running() || now > flung || now < bypass ||
+            (authored >= 0 && Math.abs(y - authored) <= 1.5)) {
+          lastY = y;
+          return;
+        }
+        const before = lastY;
+        if (before <= begins && y > begins + SLIP) { setScroll(begins); return; }
+        if (before >= ends && y < ends - SLIP) { setScroll(ends); return; }
+        lastY = y;
+      };
+
       const rest = () => {
         if (resting) return;
         resting = true;
         setParting(false);
+        authored = -1;
         heroSection.style.transform = '';
         nextSection.style.transform = '';
         root.style.setProperty('--open', '0');
@@ -1111,6 +1297,7 @@
 
         travel = aperture.offsetHeight;
         begins = heroSection.offsetTop + heroSection.offsetHeight - viewport / 2;
+        ends = begins + travel;
 
         /* offsetHeight is layout, so the live transform does not disturb it. */
         const composition = inner.offsetHeight;
@@ -1146,7 +1333,7 @@
         if (remeasure && (progress <= 0 || progress >= 1)) measure();
         setParting(progress > 0 && progress < 1);
 
-        const open = clamp01(smoothstep(0, .20, progress) - smoothstep(.80, 1, progress));
+        const open = shape(progress);
         const half = (open * viewport) / 2;
         const held = progress * travel;
 
@@ -1179,13 +1366,36 @@
         request();
       };
 
-      window.addEventListener('scroll', request, { passive: true });
+      window.addEventListener('scroll', () => { guard(); request(); }, { passive: true });
+      window.addEventListener('wheel', onWheel, { passive: false });
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove', onTouchMove, { passive: false });
+      window.addEventListener('touchend', onTouchEnd, { passive: true });
+      window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+      window.addEventListener('keydown', onKey);
       window.addEventListener('resize', resized);
       window.addEventListener('orientationchange', () => {
         setTimeout(() => { measure(); request(); }, 260);
       });
       still.addEventListener('change', () => { measure(); request(); });
       window.addEventListener('load', () => { measure(); request(); });
+
+      /* In-page links are deliberate: let them land where they were aimed. */
+      document.addEventListener('click', event => {
+        const link = event.target.closest && event.target.closest('a[href^="#"]');
+        if (link) bypass = performance.now() + 1600;
+      }, true);
+
+      /* The cue under the hero opens the seam rather than jumping the section. */
+      const cue = document.querySelector('.scroll-cue');
+      if (cue) {
+        cue.addEventListener('click', event => {
+          if (!running()) return;
+          event.preventDefault();
+          bypass = performance.now() + 1200;
+          window.scrollTo({ top: begins, left: 0, behavior: 'smooth' });
+        });
+      }
 
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => { measure(); request(); });
