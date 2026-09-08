@@ -376,29 +376,40 @@
       height: clamp(4rem, 9vh, 7.5rem);
       pointer-events: none;
       opacity: 0;
+      will-change: transform;
     }
 
+    /* Carried to the open edge by a transform rather than by an offset. An
+       offset is laid out again on every frame of the parting, which is what
+       made the two edges stutter on a phone; a transform is not. The stage is
+       exactly --vph tall, so half of it is half the gap. */
     .aperture__lip--top {
-      top: calc(50% - var(--open) * 50%);
+      top: 0;
+      transform: translate3d(0, calc((.5 - var(--open) * .5) * var(--vph)), 0);
       background: linear-gradient(180deg, rgba(192,154,87,.16), rgba(192,154,87,0) 78%);
     }
 
     .aperture__lip--bottom {
-      bottom: calc(50% - var(--open) * 50%);
+      bottom: 0;
+      transform: translate3d(0, calc((var(--open) - 1) * .5 * var(--vph)), 0);
       background: linear-gradient(0deg, rgba(192,154,87,.16), rgba(192,154,87,0) 78%);
     }
 
-    /* A hairline centred on the seam, drawn out as the two edges part */
+    /* A hairline centred on the seam, drawn out as the two edges part — by a
+       scale rather than by a width, for the same reason as the lips: it sits
+       on the very edge the reader is watching, and laying it out again on
+       every frame of the parting is visible there as a tremble. */
     .seam-tick {
       position: absolute;
       left: 50%;
       z-index: 6;
-      width: min(calc(5rem + var(--open) * 17rem), 78vw);
+      width: min(22rem, 78vw);
       height: 1px;
       pointer-events: none;
       background: linear-gradient(90deg, transparent, rgba(192,154,87,.9), transparent);
       opacity: calc(.28 + var(--open) * .62);
-      transform: translateX(-50%);
+      transform: translateX(-50%) scaleX(calc((5 + var(--open) * 17) / 22));
+      will-change: transform, opacity;
     }
 
     .seam-tick--hero { bottom: 0; }
@@ -496,12 +507,17 @@
        stage is lifted out of flow to sit behind the two parting halves. */
     .js .aperture { height: calc(var(--vph) * var(--aperture-travel)); }
 
+    /* dvh alone is re-evaluated as a phone's address bar slides, which lays
+       the whole composition out again in the middle of the parting. --vph is
+       refreshed only where the seam is shut and nothing can be seen to move,
+       and the larger of the two is taken so that the stage can never come up
+       short of the screen it is covering. */
     .js .aperture__stage {
       position: fixed;
       inset: 0 0 auto;
       z-index: 1;
       height: 100vh;
-      height: 100dvh;
+      height: max(100dvh, var(--vph, 100vh));
       padding: clamp(2.5rem, 6vh, 5rem) 0;
     }
 
@@ -640,6 +656,12 @@
     }
 
     @media (max-width: 860px) {
+      /* A finger has a few hundred pixels of glass to give and then it is
+         gone; a trackpad keeps sending momentum for a second afterwards. The
+         parting is shortened to suit the shorter gesture, so that a phone
+         crosses it in the same couple of movements a desktop does. */
+      :root { --aperture-travel: 1.7; }
+
       .hero h1 { max-width: 12ch; font-size: clamp(3.5rem, 12.5vw, 6.8rem); }
 
       .js .aperture__stage { padding: clamp(1.25rem, 4vh, 3.25rem) 0; }
@@ -1109,7 +1131,6 @@
          The distance the section spans is --aperture-travel, in viewports. */
       const V0 = 1500;
       const WHEEL_GAIN = 1;
-      const TOUCH_GAIN = 1.6;
       const WHEEL_CAP = 90;   // ceiling on any single wheel event, in px
       const RATE = 1900;      // hard ceiling on travel, px per second
       const FAST = 34;        // px in one event: arriving faster than this is
@@ -1118,6 +1139,34 @@
       const HELD = .1;        // what is let through while it does
       const SLIP = 110;       // how far a scroll this script did not author
                               // may carry into the section before it is caught
+
+      /* Touch, which is not a wheel.
+         A trackpad goes on sending momentum for about a second after the
+         flick, so one gesture there is worth well over a thousand pixels of
+         travel. A finger gives a few hundred pixels of glass and then leaves,
+         and everything it was doing stops dead in the same instant. Metered
+         like a wheel and damped like one, that is a dozen swipes to close what
+         a desktop closes in one, and every one of them lands the parting
+         somewhere in the middle of itself.
+
+         So the finger drives the seam at its own scale — near enough one for
+         one that the two edges track the fingertip, compressed only against a
+         genuinely violent flick — and the throw it leaves behind is carried on
+         here rather than being thrown away. The gesture is projected forward
+         at the speed it was released with, and the parting settles at
+         whichever of its three resting states that lands nearest: shut above
+         it, fully open, shut below it. A nudge returns to where it was. A real
+         swipe carries the whole way through, to the section it was aimed at. */
+      const TOUCH_GAIN = 1.15;
+      const TOUCH_V0 = 9000;  // touch is compressed only by a real flick
+      const TOUCH_CAP = 130;  // ceiling on any single touchmove, in px
+      const TOUCH_RATE = 3200;
+      const THROW = .38;      // seconds of momentum a release is projected by
+      const GLIDE = .945;     // momentum kept per frame outside the section
+      const REST = 55;        // px/s below which a glide is over
+      const CARRY = 1.7;      // how much longer than distance over speed a
+                              // settling movement is allowed to run
+      const LULL = 90;        // ms of stillness before a lift is not a throw
 
       let queued = false;
       let resting = false;
@@ -1136,6 +1185,12 @@
       let bypass = 0;         // deliberate jumps: skip link, Home, End
       let touchY = 0;
       let touching = false;
+      let owned = false;      // this gesture was taken over at its first move
+      let thrown = 0;         // travel per second the finger left behind
+      let moment = 0;         // time of the last honoured touch move
+      let glide = 0;          // rAF handle for the movement after a release
+      let stilling = 0;       // timer waiting on a scroll this script did not
+                              // author to come to a stop
       let arrest = 0;         // fast input is held at the seam until this time
       let flung = 0;          // a touch gesture ended this recently
 
@@ -1189,17 +1244,120 @@
         update();
       };
 
+      /* ── After the finger ──
+         Everything below runs once the glass has been let go of. */
+
+      const stopGlide = () => {
+        if (glide) cancelAnimationFrame(glide);
+        glide = 0;
+        if (stilling) clearTimeout(stilling);
+        stilling = 0;
+      };
+
+      const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+      /* Take the parting to a chosen position and stop it there. The movement
+         is timed off the speed it inherited, so it reads as the same gesture
+         continuing rather than as an animation beginning. */
+      const carry = (to, speed) => {
+        stopGlide();
+        const from = window.scrollY;
+        const span = Math.abs(to - from);
+        if (span < 1) { setScroll(to); return; }
+        const runs = Math.max(200, Math.min(700,
+          CARRY * span / Math.max(Math.abs(speed), 700) * 1000));
+        const at = performance.now();
+        const step = now => {
+          const t = clamp01((now - at) / runs);
+          setScroll(from + (to - from) * easeOut(t));
+          glide = t < 1 ? requestAnimationFrame(step) : 0;
+        };
+        glide = requestAnimationFrame(step);
+      };
+
+      /* Ordinary momentum, for a gesture the section owned but which ended
+         outside it: the page was taken away from the browser at the first
+         move, so the coast the browser would have given it is given here.
+         It is stopped at the seam, like everything else that arrives. */
+      const coast = speed => {
+        stopGlide();
+        let v = speed;
+        let last = performance.now();
+        const step = now => {
+          const dt = Math.min(.05, Math.max(.004, (now - last) / 1000));
+          last = now;
+          const y = window.scrollY;
+          const to = y + v * dt;
+          if ((y <= begins && to > begins) || (y >= ends && to < ends)) {
+            setScroll(y <= begins ? begins : ends);
+            glide = 0;
+            return;
+          }
+          setScroll(to);
+          v *= Math.pow(GLIDE, dt * 60);
+          glide = Math.abs(v) > REST && Math.abs(window.scrollY - y) > .5
+            ? requestAnimationFrame(step)
+            : 0;
+        };
+        glide = requestAnimationFrame(step);
+      };
+
+      /* The parting has three resting states and no others: shut above it,
+         fully open, shut below it. Which one a release was aimed at is read
+         off where its momentum would have carried it. */
+      const detent = at => {
+        const mid = begins + travel / 2;
+        let best = mid;
+        let gap = Math.abs(at - mid);
+        [begins, ends].forEach(edge => {
+          const away = Math.abs(at - edge);
+          if (away < gap) { gap = away; best = edge; }
+        });
+        return best;
+      };
+
+      const release = speed => {
+        const y = window.scrollY;
+        if (!inside(y)) {
+          if (Math.abs(speed) > REST) coast(speed);
+          return;
+        }
+        carry(detent(y + speed * THROW), speed);
+      };
+
+      /* A gesture that was already scrolling by the time it reached the seam
+         is not ours to cancel, so the browser is left to finish it. Once it
+         has — once the page has stood still for a moment — the parting is
+         settled the way a gesture of our own would have settled it, rather
+         than being left standing half open on the reader. */
+      const settleLater = () => {
+        stopGlide();
+        let seen = -1;
+        let left = 20;
+        const tick = () => {
+          const y = window.scrollY;
+          if (y !== seen && left-- > 0) {
+            seen = y;
+            stilling = setTimeout(tick, 120);
+            return;
+          }
+          stilling = 0;
+          if (running() && !touching && !glide && inside(y)) carry(detent(y), 0);
+        };
+        stilling = setTimeout(tick, 120);
+      };
+
       /* Raw input in, section travel out. */
-      const meter = (raw, gain) => {
+      const meter = (raw, gain, cap, v0, rate) => {
         const now = performance.now();
         const dt = Math.min(120, Math.max(4, now - stamp)) / 1000;
         stamp = now;
 
-        const honoured = Math.sign(raw) * Math.min(Math.abs(raw), WHEEL_CAP);
+        const honoured = Math.sign(raw) * Math.min(Math.abs(raw), cap);
         const speed = Math.abs(honoured) / dt;
-        let move = honoured * gain * (V0 / (V0 + speed));
+        let move = honoured * gain * (v0 / (v0 + speed));
         if (now < arrest) move *= HELD;
-        const limit = RATE * dt;
+        const limit = rate * dt;
         return Math.max(-limit, Math.min(limit, move));
       };
 
@@ -1209,17 +1367,20 @@
         (raw > 0 && y <= begins + .5 && y + raw > begins) ||
         (raw < 0 && y >= ends - .5 && y + raw < ends);
 
-      const drive = (raw, gain) => {
+      /* Returns the travel it spent, or null when the input was not the
+         section's to take. */
+      const drive = (raw, gain, cap, v0, rate) => {
         const y = window.scrollY;
         const held = inside(y);
-        if (!held && !arriving(y, raw)) return false;
+        if (!held && !arriving(y, raw)) return null;
         /* Arriving at speed: the page is stopped at the seam and the front of
            the fling is spent against it, so the aperture is opened by what the
            reader does next rather than by the momentum that got them here. */
         if (!held && Math.abs(raw) > FAST) arrest = performance.now() + CAUGHT;
         const from = held ? y : (raw > 0 ? begins : ends);
-        setScroll(from + meter(raw, gain));
-        return true;
+        const move = meter(raw, gain, cap, v0, rate);
+        setScroll(from + move);
+        return move;
       };
 
       const onWheel = event => {
@@ -1228,14 +1389,19 @@
         if (event.deltaMode === 1) raw *= 16;
         else if (event.deltaMode === 2) raw *= window.innerHeight;
         if (!raw) return;
-        if (drive(raw, WHEEL_GAIN)) event.preventDefault();
+        stopGlide();
+        if (drive(raw, WHEEL_GAIN, WHEEL_CAP, V0, RATE) !== null) event.preventDefault();
       };
 
       const onTouchStart = event => {
+        stopGlide();
         touching = running() && event.touches.length === 1;
+        owned = false;
+        thrown = 0;
         if (!touching) return;
         touchY = event.touches[0].clientY;
         stamp = performance.now();
+        moment = stamp;
       };
 
       const onTouchMove = event => {
@@ -1244,15 +1410,43 @@
         const raw = touchY - point;
         if (!raw) return;
         const y = window.scrollY;
-        if (!inside(y) && !arriving(y, raw)) return;
-        if (event.cancelable) event.preventDefault();
+        /* Once the section has taken a gesture it keeps it. Preventing the
+           first move takes the page away from the browser for the whole of
+           that gesture — there is no handing it back part way through — so
+           everything the finger does afterwards is answered here, including
+           the part that carries it out of the section. Where the gesture was
+           already scrolling before it arrived, the move is not ours to
+           cancel; the seam is held by drive() and by guard() instead. */
+        if (!owned && !inside(y) && !arriving(y, raw)) return;
+        if (event.cancelable) { event.preventDefault(); owned = true; }
         touchY = point;
-        drive(raw, TOUCH_GAIN);
+
+        let moved = drive(raw, TOUCH_GAIN, TOUCH_CAP, TOUCH_V0, TOUCH_RATE);
+        if (moved === null) {
+          if (!owned) return;
+          moved = raw;
+          setScroll(y + raw);
+        }
+
+        /* The speed of the parting, not of the finger: it is what the throw
+           after the finger has to continue, so it is measured in the same
+           units the throw is spent in. */
+        const now = performance.now();
+        const dt = Math.min(.1, Math.max(.006, (now - moment) / 1000));
+        moment = now;
+        thrown = thrown * .68 + (moved / dt) * .32;
       };
 
       const onTouchEnd = () => {
+        const ours = touching && owned;
         touching = false;
+        owned = false;
         flung = performance.now() + 2600;
+        if (!running()) return;
+        if (!ours) { settleLater(); return; }
+        /* A finger that came to rest before it lifted has thrown nothing. */
+        if (performance.now() - moment > LULL) thrown = 0;
+        release(thrown);
       };
 
       const onKey = event => {
@@ -1276,6 +1470,7 @@
         const y = window.scrollY;
         if (y <= begins - 1 || y >= ends + 1) return;
         event.preventDefault();
+        stopGlide();
         setScroll(y + step);
       };
 
@@ -1301,6 +1496,7 @@
       const rest = () => {
         if (resting) return;
         resting = true;
+        stopGlide();
         setParting(false);
         authored = -1;
         heroSection.style.transform = '';
@@ -1407,7 +1603,7 @@
       /* In-page links are deliberate: let them land where they were aimed. */
       document.addEventListener('click', event => {
         const link = event.target.closest && event.target.closest('a[href^="#"]');
-        if (link) bypass = performance.now() + 1600;
+        if (link) { bypass = performance.now() + 1600; stopGlide(); }
       }, true);
 
       /* The cue under the hero opens the seam rather than jumping the section. */
@@ -1417,6 +1613,7 @@
           if (!running()) return;
           event.preventDefault();
           bypass = performance.now() + 1200;
+          stopGlide();
           window.scrollTo({ top: begins, left: 0, behavior: 'smooth' });
         });
       }
