@@ -503,511 +503,6 @@
 
     .js .aperture__lip { opacity: var(--open); }
 
-    /* Artefact gallery */
-    .artefacts {
-      position: relative;
-      z-index: 2;
-      min-height: var(--vph);
-      border-top: 1px solid rgba(192,154,87, calc(.16 + var(--open) * .52));
-      box-shadow:
-        0 -1.4rem 3.4rem rgba(0,0,0,.66),
-        inset 0 3.5rem 4.5rem -3.5rem rgba(0,0,0,.95);
-      padding: clamp(6.75rem, 10vw, 10rem) var(--gutter) clamp(3rem, 6vw, 5rem);
-      overflow: hidden;
-      background: var(--dark);
-    }
-
-    .artefacts::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      right: var(--gutter);
-      left: var(--gutter);
-      height: 1px;
-      background: var(--rule);
-    }
-
-    .section-head {
-      position: relative;
-      z-index: 3;
-      display: grid;
-      grid-template-columns: minmax(8rem, .75fr) minmax(17rem, 3.25fr);
-      gap: clamp(1.5rem, 4vw, 5rem);
-      align-items: start;
-      margin-bottom: clamp(3.5rem, 7vw, 7.5rem);
-    }
-
-    .eyebrow {
-      margin: .35rem 0 0;
-      color: var(--gilt);
-      font-size: .7rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-
-    .section-head h2 {
-      max-width: 31ch;
-      margin: 0;
-      font-family: var(--display);
-      font-size: clamp(2.15rem, 3.35vw, 4.15rem);
-      font-weight: 300;
-      letter-spacing: -.018em;
-      line-height: 1.04;
-      text-wrap: balance;
-    }
-
-    .gallery {
-      position: relative;
-      z-index: 3;
-    }
-
-    .gallery__stage {
-      position: relative;
-      display: grid;
-      grid-template-columns: minmax(17rem, 1.15fr) minmax(17rem, .85fr);
-      align-items: center;
-      gap: clamp(3rem, 8vw, 9rem);
-      min-height: min(70vh, 48rem);
-    }
-
-    .plate-stack {
-      position: relative;
-      justify-self: end;
-      width: min(100%, 35rem);
-      aspect-ratio: 4 / 5;
-    }
-
-    .plate {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      padding: clamp(.55rem, 1vw, .9rem);
-      border: 1px solid var(--rule);
-      background: var(--dark-lift);
-      box-shadow: 0 45px 95px -48px rgba(0,0,0,.95);
-      opacity: 0;
-      transform: translateX(1.4rem) scale(.985);
-      visibility: hidden;
-      transition:
-        opacity 520ms var(--ease),
-        transform 760ms var(--ease),
-        visibility 0s linear 760ms;
-    }
-
-    .plate.is-active {
-      z-index: 2;
-      opacity: 1;
-      transform: none;
-      visibility: visible;
-      transition-delay: 0s;
-    }
-
-    .study {
-      position: relative;
-      display: grid;
-      place-items: center;
-      min-width: 0;
-      overflow: hidden;
-      border: 1px solid rgba(192,154,87,.27);
-      background: #151c18;
-    }
-
-    .study::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      box-shadow: inset 0 0 5rem rgba(0,0,0,.42);
-    }
-
-    .study__note {
-      position: absolute;
-      bottom: 1.1rem;
-      left: 1.2rem;
-      z-index: 4;
-      margin: 0;
-      color: rgba(229,225,213,.48);
-      font-size: .58rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-
-    /* I — closed volume */
-    .study--volume { perspective: 900px; }
-    .volume {
-      position: relative;
-      width: 51%;
-      aspect-ratio: .74;
-      transform: rotateY(-12deg) rotateZ(-4deg);
-      transform-style: preserve-3d;
-      background:
-        repeating-linear-gradient(90deg, rgba(229,225,213,.025) 0 1px, transparent 1px 3px),
-        #27372e;
-      box-shadow: 1.25rem 1.8rem 2rem rgba(0,0,0,.45), inset 1rem 0 rgba(14,19,16,.45);
-    }
-
-    .volume::before {
-      content: "";
-      position: absolute;
-      inset: 6% 7% 6% 19%;
-      border: 1px solid rgba(192,154,87,.75);
-    }
-
-    .volume::after {
-      content: "General\A Memory";
-      position: absolute;
-      top: 42%;
-      right: 10%;
-      left: 23%;
-      color: var(--gilt);
-      font-family: var(--display);
-      font-size: clamp(1rem, 2.2vw, 2rem);
-      font-weight: 400;
-      line-height: .9;
-      text-align: center;
-      text-transform: uppercase;
-      white-space: pre;
-    }
-
-    /* II — open spread */
-    .spread {
-      position: relative;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      width: 78%;
-      aspect-ratio: 1.55;
-      filter: drop-shadow(0 1.6rem 1.3rem rgba(0,0,0,.45));
-      transform: rotateX(7deg) rotateZ(2deg);
-    }
-
-    .page {
-      position: relative;
-      overflow: hidden;
-      padding: 9% 10%;
-      color: #20271f;
-      background:
-        radial-gradient(circle at 40% 22%, rgba(255,255,255,.5), transparent 34%),
-        #d8d2c3;
-    }
-
-    .page:first-child { box-shadow: inset -1.2rem 0 1.7rem rgba(55,48,36,.16); }
-    .page:last-child { box-shadow: inset 1.2rem 0 1.7rem rgba(55,48,36,.16); }
-
-    .page__photo {
-      width: 100%;
-      height: 54%;
-      margin-top: 1.2rem;
-      background:
-        linear-gradient(145deg, transparent 48%, rgba(213,207,191,.7) 49%),
-        linear-gradient(35deg, #4a5149 28%, #8b8d7f 29% 58%, #b4ad9c 59%);
-      filter: grayscale(.7) sepia(.22);
-    }
-
-    .lines,
-    .lines::before,
-    .lines::after {
-      display: block;
-      height: 1px;
-      background: rgba(32,39,31,.28);
-    }
-
-    .lines { position: relative; width: 82%; margin-top: 1.2rem; }
-    .lines::before, .lines::after { content: ""; position: absolute; left: 0; }
-    .lines::before { top: .65rem; width: 100%; }
-    .lines::after { top: 1.3rem; width: 61%; }
-
-    .page__title {
-      display: block;
-      font-family: var(--display);
-      font-size: clamp(1rem, 2vw, 1.8rem);
-      line-height: 1;
-    }
-
-    /* III — gold blocking */
-    .study--gilt {
-      background:
-        radial-gradient(circle at 48% 40%, rgba(117,137,120,.2), transparent 42%),
-        repeating-linear-gradient(90deg, rgba(229,225,213,.02) 0 1px, transparent 1px 3px),
-        #233329;
-    }
-
-    .gilt-title {
-      position: relative;
-      display: grid;
-      place-items: center;
-      width: 57%;
-      aspect-ratio: 1;
-      border: 1px solid rgba(192,154,87,.72);
-      color: var(--gilt);
-      font-family: var(--display);
-      font-size: clamp(1.7rem, 4.5vw, 4.3rem);
-      line-height: .8;
-      text-align: center;
-      text-transform: uppercase;
-      transform: rotate(-2deg);
-    }
-
-    .gilt-title::before,
-    .gilt-title::after {
-      content: "";
-      position: absolute;
-      width: 12%;
-      height: 12%;
-      border: solid currentColor;
-    }
-
-    .gilt-title::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
-    .gilt-title::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
-
-    /* IV — folio */
-    .folio {
-      position: relative;
-      width: 53%;
-      aspect-ratio: .78;
-    }
-
-    .folio__sheet {
-      position: absolute;
-      inset: 0;
-      padding: 8%;
-      background: #d9d3c3;
-      box-shadow: 0 1.1rem 1.6rem rgba(0,0,0,.28);
-    }
-
-    .folio__sheet:nth-child(1) { transform: rotate(-10deg) translate(-10%, 2%); }
-    .folio__sheet:nth-child(2) { transform: rotate(7deg) translate(11%, -2%); }
-    .folio__sheet:nth-child(3) { transform: rotate(-1deg); }
-
-    .folio__image {
-      width: 100%;
-      height: 72%;
-      background:
-        radial-gradient(circle at 56% 34%, #9e998c 0 9%, transparent 10%),
-        linear-gradient(145deg, transparent 47%, rgba(217,211,195,.55) 48%),
-        linear-gradient(40deg, #555b54 0 33%, #85867c 34% 66%, #beb6a5 67%);
-      filter: grayscale(.8) sepia(.15);
-    }
-
-    .folio__rule { display: block; width: 46%; height: 1px; margin-top: 12%; background: rgba(32,39,31,.42); }
-
-    /* V — clamshell case */
-    .study--case { perspective: 900px; }
-    .case {
-      position: relative;
-      width: 66%;
-      aspect-ratio: 1.05;
-      transform: rotateX(60deg) rotateZ(-16deg) translateY(6%);
-      transform-style: preserve-3d;
-    }
-
-    .case__base {
-      position: absolute;
-      inset: 30% 0 0;
-      border: clamp(.65rem, 1.5vw, 1.2rem) solid #314238;
-      background: #171d19;
-      box-shadow: .8rem 1rem 1.5rem rgba(0,0,0,.45);
-    }
-
-    .case__base::before {
-      content: "";
-      position: absolute;
-      inset: 9% 15%;
-      background: #27372e;
-      box-shadow: inset .65rem 0 rgba(12,17,14,.4);
-    }
-
-    .case__lid {
-      position: absolute;
-      right: 0;
-      bottom: 70%;
-      left: 0;
-      height: 68%;
-      border: .35rem solid #314238;
-      background:
-        repeating-linear-gradient(90deg, rgba(229,225,213,.025) 0 1px, transparent 1px 3px),
-        #27372e;
-      transform: rotateX(-38deg);
-      transform-origin: bottom;
-      box-shadow: 0 -.7rem 1.3rem rgba(0,0,0,.24);
-    }
-
-    .case__lid::after {
-      content: "GM";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      color: var(--gilt);
-      font-family: var(--display);
-      font-size: clamp(1.4rem, 4vw, 3.4rem);
-      letter-spacing: .08em;
-    }
-
-    /* VI — engraved plate */
-    .study--archive {
-      background:
-        repeating-linear-gradient(0deg, rgba(229,225,213,.018) 0 1px, transparent 1px 3px),
-        #1d2922;
-    }
-
-    .archive-mark {
-      position: relative;
-      width: 66%;
-      min-height: 26%;
-      padding: 7% 8%;
-      border: 1px solid #d2b679;
-      color: #493514;
-      background: #af8844;
-      box-shadow:
-        0 1.3rem 2rem rgba(0,0,0,.48),
-        inset 0 1px rgba(255,244,197,.65),
-        inset 0 -1px rgba(67,42,10,.5);
-      transform: rotate(-3deg);
-      text-align: center;
-    }
-
-    .archive-mark::after {
-      content: "";
-      position: absolute;
-      inset: .45rem;
-      border: 1px solid rgba(73,53,20,.42);
-    }
-
-    .archive-mark__brand,
-    .archive-mark__number { position: relative; z-index: 2; display: block; }
-
-    .archive-mark__brand {
-      font-family: var(--display);
-      font-size: clamp(1.1rem, 2.8vw, 2.4rem);
-      font-weight: 500;
-      line-height: 1;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-
-    .archive-mark__number {
-      margin-top: .6rem;
-      font-size: clamp(.46rem, .8vw, .7rem);
-      font-weight: 400;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-    }
-
-    .gallery__copy { max-width: 31rem; }
-
-    .gallery__number {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 0 0 1.35rem;
-      color: var(--gilt);
-      font-family: var(--display);
-      font-size: 1.05rem;
-      letter-spacing: .11em;
-    }
-
-    .gallery__number::after {
-      content: "";
-      width: 2.5rem;
-      height: 1px;
-      background: currentColor;
-      opacity: .5;
-    }
-
-    .gallery__title {
-      margin: 0;
-      font-family: var(--display);
-      font-size: clamp(2.55rem, 4.2vw, 5rem);
-      font-weight: 300;
-      letter-spacing: -.02em;
-      line-height: .94;
-    }
-
-    .gallery__description {
-      margin: 1.55rem 0 0;
-      color: var(--muted);
-      font-size: clamp(.92rem, 1.2vw, 1.03rem);
-      max-width: 36ch;
-    }
-
-    .gallery__nav {
-      display: flex;
-      align-items: center;
-      gap: .65rem;
-      margin-top: clamp(2.5rem, 5vw, 4.5rem);
-    }
-
-    .gallery-arrow {
-      display: grid;
-      width: 3.25rem;
-      height: 3.25rem;
-      place-items: center;
-      border: 1px solid var(--rule);
-      border-radius: 50%;
-      color: var(--bone);
-      background: transparent;
-      cursor: pointer;
-      transition: color 320ms var(--ease), background 320ms var(--ease), border-color 320ms var(--ease);
-    }
-
-    .gallery-arrow:hover:not(:disabled) {
-      border-color: var(--gilt);
-      color: var(--dark);
-      background: var(--gilt);
-    }
-
-    .gallery-arrow:disabled { cursor: default; opacity: .24; }
-    .gallery-arrow svg { width: 1rem; height: 1rem; }
-
-    .gallery-index {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .1rem;
-      margin-left: clamp(.3rem, 1vw, 1.1rem);
-    }
-
-    .gallery-index button {
-      position: relative;
-      min-width: 2.65rem;
-      min-height: 2.65rem;
-      border: 0;
-      padding: .5rem;
-      color: var(--muted);
-      background: transparent;
-      font-family: var(--display);
-      font-size: .9rem;
-      letter-spacing: .08em;
-      cursor: pointer;
-      transition: color 300ms var(--ease);
-    }
-
-    .gallery-index button::after {
-      content: "";
-      position: absolute;
-      right: .55rem;
-      bottom: .35rem;
-      left: .55rem;
-      height: 1px;
-      background: var(--gilt);
-      transform: scaleX(0);
-      transition: transform 420ms var(--ease);
-    }
-
-    .gallery-index button:hover { color: var(--bone); }
-    .gallery-index button[aria-current="true"] { color: var(--gilt); }
-    .gallery-index button[aria-current="true"]::after { transform: scaleX(1); }
-
-    .gallery__counter {
-      margin: clamp(3rem, 6vw, 5rem) 0 0;
-      padding-top: 1.1rem;
-      border-top: 1px solid var(--rule);
-      color: rgba(229,225,213,.48);
-      font-size: .66rem;
-      letter-spacing: .17em;
-      text-align: right;
-      text-transform: uppercase;
-    }
-
     .contact {
       position: relative;
       z-index: 2;
@@ -1182,24 +677,6 @@
         line-height: 1.48;
       }
 
-      .section-head {
-        grid-template-columns: minmax(6rem, .35fr) 1.65fr;
-      }
-
-      .gallery__stage {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        min-height: 0;
-      }
-
-      .plate-stack {
-        justify-self: center;
-        width: min(100%, 31rem);
-      }
-
-      .gallery__copy { justify-self: center; width: min(100%, 31rem); }
-      .gallery__counter { text-align: left; }
-
       .contact__card {
         grid-template-columns: 1fr;
         gap: 3.75rem;
@@ -1251,21 +728,6 @@
       .film-control { font-size: 0; gap: 0; width: 2.75rem; height: 2.75rem; place-content: center; }
 
       .artefacts { padding-top: 5.75rem; }
-
-      .section-head {
-        grid-template-columns: 1fr;
-        gap: 1.4rem;
-        margin-bottom: 3.25rem;
-      }
-
-      .section-head h2 { font-size: clamp(1.9rem, 7.7vw, 2.65rem); line-height: 1.08; }
-      .plate-stack { width: 100%; }
-      .gallery__title { font-size: clamp(2.65rem, 12vw, 3.8rem); }
-
-      .gallery__nav { align-items: flex-start; flex-wrap: wrap; gap: .5rem; }
-      .gallery-index { order: 3; width: 100%; margin: .6rem 0 0; }
-      .gallery-index button { min-width: 2.7rem; min-height: 2.85rem; }
-      .gallery-arrow { width: 3rem; height: 3rem; }
 
       .contact__card {
         padding: 2rem 1.4rem;
@@ -1319,24 +781,11 @@
       }
 
       .movement p { max-width: 34ch; font-size: clamp(.7rem, 2vh, .84rem); }
-
-      .gallery__stage {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: clamp(1.5rem, 5vw, 4rem);
-      }
-
-      .plate-stack { justify-self: end; width: min(100%, 50vh); }
-      .gallery__copy { justify-self: start; width: auto; }
-      .gallery__title { font-size: clamp(1.75rem, 9vh, 2.75rem); }
-      .gallery__nav { flex-wrap: wrap; margin-top: clamp(1rem, 4vh, 2rem); }
-      .gallery-index { order: 3; width: 100%; margin: .45rem 0 0; }
     }
 
     /* Below this the copy column is too narrow to hold the arrows and the six
        numerals on one line, so the numerals take a line of their own. */
     @media (max-width: 1200px) {
-      .gallery__nav { flex-wrap: wrap; }
-      .gallery-index { order: 3; width: 100%; margin: .55rem 0 0; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1350,6 +799,7 @@
       .reveal { opacity: 1; transform: none; }
     }
   </style>
+  <link rel="stylesheet" href="assets/memory-room.css?v=2">
 </head>
 
 <body>
@@ -1452,91 +902,62 @@
 
     <section class="artefacts bookcloth" id="artefacts" aria-labelledby="artefacts-title">
       <span class="seam-tick seam-tick--next" aria-hidden="true"></span>
-
-      <header class="section-head reveal">
-        <p class="eyebrow">The artefact</p>
-        <h2 id="artefacts-title">Six studies in cloth, paper, gold and brass.</h2>
+      <header class="memory-intro">
+        <div>
+          <p class="memory-kicker">The shape of a memory</p>
+          <h2 id="artefacts-title">There are ways<br>to <em>live it again.</em></h2>
+        </div>
+        <p class="memory-invitation">Choose a familiar corner.<br>Watch the memories return.<span>Touch the table, settee, window or shelf.</span></p>
       </header>
 
-      <div class="gallery reveal" aria-roledescription="carousel" aria-label="Artefact material studies">
-        <div class="gallery__stage" id="galleryStage">
-          <div class="plate-stack" id="plateStack">
-            <figure class="plate is-active" data-plate="0" aria-hidden="false">
-              <div class="study study--volume">
-                <div class="volume" aria-hidden="true"></div>
-                <p class="study__note">Material study / bookcloth and gilt</p>
-              </div>
-            </figure>
-
-            <figure class="plate" data-plate="1" aria-hidden="true">
-              <div class="study study--spread">
-                <div class="spread" aria-hidden="true">
-                  <div class="page"><span class="page__title">Before<br>memory fades</span><span class="lines"></span></div>
-                  <div class="page"><div class="page__photo"></div><span class="lines"></span></div>
-                </div>
-                <p class="study__note">Material study / cotton rag paper</p>
-              </div>
-            </figure>
-
-            <figure class="plate" data-plate="2" aria-hidden="true">
-              <div class="study study--gilt">
-                <div class="gilt-title" aria-hidden="true">A life<br>kept</div>
-                <p class="study__note">Material study / gold blocking</p>
-              </div>
-            </figure>
-
-            <figure class="plate" data-plate="3" aria-hidden="true">
-              <div class="study study--folio">
-                <div class="folio" aria-hidden="true">
-                  <div class="folio__sheet"><div class="folio__image"></div><span class="folio__rule"></span></div>
-                  <div class="folio__sheet"><div class="folio__image"></div><span class="folio__rule"></span></div>
-                  <div class="folio__sheet"><div class="folio__image"></div><span class="folio__rule"></span></div>
-                </div>
-                <p class="study__note">Material study / restored prints</p>
-              </div>
-            </figure>
-
-            <figure class="plate" data-plate="4" aria-hidden="true">
-              <div class="study study--case">
-                <div class="case" aria-hidden="true">
-                  <div class="case__lid"></div>
-                  <div class="case__base"></div>
-                </div>
-                <p class="study__note">Material study / fitted clamshell</p>
-              </div>
-            </figure>
-
-            <figure class="plate" data-plate="5" aria-hidden="true">
-              <div class="study study--archive">
-                <div class="archive-mark" aria-hidden="true">
-                  <span class="archive-mark__brand">General Memory</span>
-                  <span class="archive-mark__number">Private archive · No. 001</span>
-                </div>
-                <p class="study__note">Material study / engraved brass</p>
-              </div>
-            </figure>
-          </div>
-
-          <div class="gallery__copy" aria-live="polite">
-            <p class="gallery__number" id="plateNumber">I</p>
-            <h3 class="gallery__title" id="plateTitle">The volume</h3>
-            <p class="gallery__description" id="plateDescription">Quarter-bound in cloth with a leather spine, made once for one family.</p>
-
-            <nav class="gallery__nav" aria-label="Move between artefact studies">
-              <button class="gallery-arrow" id="platePrev" type="button" aria-label="Previous artefact" disabled>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <button class="gallery-arrow" id="plateNext" type="button" aria-label="Next artefact">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 4 8 8-8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <div class="gallery-index" id="plateIndex"></div>
-            </nav>
-          </div>
+      <div class="memory-exhibit">
+        <div class="memory-exhibit__top">
+          <p>An imagined home, Singapore, c. 1955</p>
+          <span>A room full of stories</span>
         </div>
+        <div class="memory-room" id="memoryRoom" role="group" aria-label="Reveal family memories in a Peranakan living room" aria-describedby="roomInstructions">
+          <p class="memory-sr" id="roomInstructions">Choose any of the four objects. Its memory will gently appear in colour and stay. You can explore in any order, without leaving the room.</p>
+          <div class="memory-room__canvas">
+            <img class="memory-room__image" src="assets/memory-room/room-empty.webp" width="1536" height="1024" loading="lazy" decoding="async" alt="A sunlit Peranakan room with an open window on the left, a carved rattan settee, a walnut table and an empty display shelf on the right.">
+            <!-- The completed background stays behind the foreground children. -->
+            <img class="memory-room__complete" id="roomComplete" data-src="assets/memory-room/room-background.webp" width="1536" height="1024" alt="" aria-hidden="true">
+            <img class="memory-recollection" data-recollection="settee" data-src="assets/memory-room/room-background.webp" width="1536" height="1024" alt="" aria-hidden="true">
+            <img class="memory-recollection" data-recollection="window" data-src="assets/memory-room/room-background.webp" width="1536" height="1024" alt="" aria-hidden="true">
+            <img class="memory-recollection" data-recollection="shelf" data-src="assets/memory-room/room-background.webp" width="1536" height="1024" alt="" aria-hidden="true">
+            <img class="memory-recollection" data-recollection="table" data-src="assets/memory-room/room-foreground.webp" width="1536" height="1024" alt="" aria-hidden="true">
+            <noscript><img class="memory-room__static" src="assets/memory-room/room-complete.webp" width="1536" height="1024" loading="lazy" alt="The room filled with family memories: children playing cards, a laughing family on the settee, a girl on tiptoes at the window, and trophies on the shelf."></noscript>
+            <span class="memory-room__shade" aria-hidden="true"></span>
+            <button class="memory-hotspot memory-hotspot--table" type="button" data-memory="table" data-label="The table" style="--x:53%;--y:81%;--hit-w:76%;--hit-h:34%" aria-label="Reveal children playing cards around the table">
+              <span class="memory-hotspot__marker" aria-hidden="true"></span><span class="memory-hotspot__label">The table</span>
+            </button>
+            <button class="memory-hotspot memory-hotspot--settee" type="button" data-memory="settee" data-label="The settee" style="--x:52%;--y:43%;--hit-w:43%;--hit-h:40%" aria-label="Reveal a family laughing together on the settee">
+              <span class="memory-hotspot__marker" aria-hidden="true"></span><span class="memory-hotspot__label">The settee</span>
+            </button>
+            <button class="memory-hotspot memory-hotspot--window" type="button" data-memory="window" data-label="The window" style="--x:11.5%;--y:35%;--hit-w:17%;--hit-h:45%" aria-label="Reveal a little girl peeking out of the window">
+              <span class="memory-hotspot__marker" aria-hidden="true"></span><span class="memory-hotspot__label">The window</span>
+            </button>
+            <button class="memory-hotspot memory-hotspot--shelf" type="button" data-memory="shelf" data-label="The shelf" style="--x:91.5%;--y:34%;--hit-w:13%;--hit-h:53%" aria-label="Reveal the trophies and medals on the shelf">
+              <span class="memory-hotspot__marker" aria-hidden="true"></span><span class="memory-hotspot__label">The shelf</span>
+            </button>
+          </div>
+          <p class="memory-scene-error" id="roomImageError" hidden>The memory is taking a little longer to arrive. Touch an object to try again.</p>
+        </div>
+        <div class="memory-exhibit__bottom">
+          <p class="memory-room__caption" id="roomCaption">Some rooms never really leave us.</p>
+          <button class="memory-reset" id="memoryReset" type="button" disabled aria-label="Return the room to black and white">Begin again</button>
+        </div>
+        <p class="memory-sr" id="roomAnnouncement" role="status" aria-live="polite" aria-atomic="true"></p>
+      </div>
 
-        <p class="gallery__counter"><span id="currentCount">01</span> / 06 &nbsp;·&nbsp; General Memory</p>
+      <div class="memory-afterword">
+        <h3>Your life will suggest<br>its own form.</h3>
+        <div>
+          <p>Perhaps an heirloom to hold, connected to a private world of photographs, films and stories. Perhaps a small reminder that becomes part of every day. Together, we discover what feels like you.</p>
+          <small>This room and its memories are imagined. Every commission begins with your life.</small>
+        </div>
       </div>
     </section>
+
 
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="contact__card reveal">
@@ -1563,6 +984,9 @@
       </div>
     </section>
   </main>
+
+
+
 
   <script>
     const hero = document.querySelector('.hero');
@@ -1771,78 +1195,6 @@
       update();
     }
 
-    const studies = [
-      { numeral: 'I', title: 'The volume', description: 'Quarter-bound in cloth with a leather spine, made once for one family.' },
-      { numeral: 'II', title: 'The pages', description: 'Cotton paper, generously proportioned and sewn so every remembered detail lies open.' },
-      { numeral: 'III', title: 'The title', description: 'Blocked in gold: a name and a life pressed permanently into the cloth.' },
-      { numeral: 'IV', title: 'The folio', description: 'Restored photographs printed on cotton rag and gathered in their own portfolio.' },
-      { numeral: 'V', title: 'The case', description: 'A clamshell made to fit the finished volume and protect it between readings.' },
-      { numeral: 'VI', title: 'The archive', description: 'An engraved plate accompanies a private digital archive for the generations that follow.' }
-    ];
-
-    const plates = Array.from(document.querySelectorAll('.plate'));
-    const plateIndex = document.querySelector('#plateIndex');
-    const plateNumber = document.querySelector('#plateNumber');
-    const plateTitle = document.querySelector('#plateTitle');
-    const plateDescription = document.querySelector('#plateDescription');
-    const currentCount = document.querySelector('#currentCount');
-    const previous = document.querySelector('#platePrev');
-    const next = document.querySelector('#plateNext');
-    const stage = document.querySelector('#galleryStage');
-    let activePlate = 0;
-    let touchStart = null;
-
-    studies.forEach((study, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.textContent = study.numeral;
-      button.setAttribute('aria-label', `Show ${study.title}`);
-      button.setAttribute('aria-current', String(index === 0));
-      button.addEventListener('click', () => showPlate(index));
-      plateIndex.appendChild(button);
-    });
-
-    function showPlate(index) {
-      activePlate = Math.max(0, Math.min(index, studies.length - 1));
-      const study = studies[activePlate];
-
-      plates.forEach((plate, i) => {
-        const isActive = i === activePlate;
-        plate.classList.toggle('is-active', isActive);
-        plate.setAttribute('aria-hidden', String(!isActive));
-      });
-
-      Array.from(plateIndex.children).forEach((button, i) => {
-        button.setAttribute('aria-current', String(i === activePlate));
-      });
-
-      plateNumber.textContent = study.numeral;
-      plateTitle.textContent = study.title;
-      plateDescription.textContent = study.description;
-      currentCount.textContent = String(activePlate + 1).padStart(2, '0');
-      previous.disabled = activePlate === 0;
-      next.disabled = activePlate === studies.length - 1;
-    }
-
-    previous.addEventListener('click', () => showPlate(activePlate - 1));
-    next.addEventListener('click', () => showPlate(activePlate + 1));
-
-    stage.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowLeft') showPlate(activePlate - 1);
-      if (event.key === 'ArrowRight') showPlate(activePlate + 1);
-    });
-
-    stage.addEventListener('touchstart', event => {
-      touchStart = event.changedTouches[0].clientX;
-    }, { passive: true });
-
-    stage.addEventListener('touchend', event => {
-      if (touchStart === null) return;
-      const distance = event.changedTouches[0].clientX - touchStart;
-      if (Math.abs(distance) > 48) showPlate(activePlate + (distance < 0 ? 1 : -1));
-      touchStart = null;
-    }, { passive: true });
-
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -1857,5 +1209,6 @@
       document.querySelectorAll('.reveal').forEach(element => element.classList.add('is-visible'));
     }
   </script>
+  <script src="assets/memory-room.js?v=2" defer></script>
 </body>
 </html>
