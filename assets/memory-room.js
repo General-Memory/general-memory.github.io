@@ -1,4 +1,6 @@
-/* Four independent memories in one room. No routes, dialogs or stored visitor data. */
+/* A four-step tour of the commission, told in one room. Each step fills its own
+   corner with colour and opens the card that explains that stage. No routes,
+   dialogs or stored visitor data. */
 (() => {
   'use strict';
 
@@ -6,6 +8,8 @@
   if (!room) return;
   const buttons = [...room.querySelectorAll('[data-memory]')];
   const layers = [...room.querySelectorAll('[data-recollection]')];
+  const cards = [...document.querySelectorAll('#roomSteps [data-step]')];
+  const progress = document.getElementById('roomProgress');
   const fullScene = document.getElementById('roomComplete');
   const resetButton = document.getElementById('memoryReset');
   const caption = document.getElementById('roomCaption');
@@ -14,24 +18,28 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const revealed = new Set();
   const pending = new Set();
+  // The card beside each step carries the wording; only the line for the caption
+  // bar and the scene description live here.
   const descriptions = {
-    table: {
-      caption: 'One more game. Then one more after that.',
-      announcement: 'Children playing cards appear in colour around the table.'
-    },
-    settee: {
-      caption: 'The kind of laughter you can still hear.',
-      announcement: 'A family laughing together appears in colour on the rattan settee.'
-    },
     window: {
-      caption: 'When the world was just beyond the windowsill.',
+      caption: 'Step one. We start by listening, for as long as it takes.',
       announcement: 'A little girl on tiptoes appears in colour, peeking out of the window.'
     },
+    table: {
+      caption: 'Step two. Everything you have kept, gathered and made sense of.',
+      announcement: 'Children playing cards appear in colour around the table.'
+    },
     shelf: {
-      caption: 'Every small triumph, kept with pride.',
+      caption: 'Step three. Four to six weeks at the bench.',
       announcement: 'Trophies and medals appear in colour on the display shelf.'
+    },
+    settee: {
+      caption: 'Step four. We bring your life back to you, in objects you can hold.',
+      announcement: 'A family laughing together appears in colour on the rattan settee.'
     }
   };
+  const restingCaption = caption.textContent;
+  const restingProgress = progress.textContent;
   let imageReady = null;
   let completeTimer = null;
   let resetTimer = null;
@@ -90,6 +98,29 @@
     resetButton.disabled = revealed.size === 0 && pending.size === 0;
   }
 
+  // One card at a time: the step just chosen. The room stays legible, and the
+  // tour reads in the order the markers are numbered.
+  function showCard(key) {
+    cards.forEach(card => card.classList.toggle('is-current', card.dataset.step === key));
+  }
+
+  function updateProgress() {
+    if (!revealed.size) progress.textContent = restingProgress;
+    else if (revealed.size === buttons.length) progress.textContent = 'All four steps';
+    else progress.textContent = revealed.size + ' of 4 steps';
+  }
+
+  // Read the card aloud in parts, so the step number and title do not run into
+  // the sentence that follows them.
+  function cardText(key) {
+    const card = cards.find(item => item.dataset.step === key);
+    if (!card) return '';
+    return [...card.children]
+      .map(part => part.textContent.replace(/\s+/g, ' ').trim())
+      .filter(Boolean)
+      .join('. ');
+  }
+
   function completeRoom() {
     window.clearTimeout(completeTimer);
     const expectedEpoch = epoch;
@@ -97,8 +128,8 @@
     completeTimer = window.setTimeout(() => {
       if (epoch !== expectedEpoch || revealed.size !== buttons.length) return;
       room.classList.add('is-complete');
-      caption.textContent = 'A room is made of the life inside it.';
-      announcement.textContent = 'All four memories are revealed. The whole room is now in colour.';
+      caption.textContent = 'Four steps. A room is made of the life inside it.';
+      announcement.textContent = 'All four steps are open. The whole room is now in colour.';
     }, reducedMotion.matches ? 0 : 2500);
   }
 
@@ -124,15 +155,17 @@
       layers.find(layer => layer.dataset.recollection === key).classList.add('is-revealed');
       button.classList.add('is-revealed');
       button.setAttribute('aria-disabled', 'true');
-      button.setAttribute('aria-label', button.dataset.label + '. Memory revealed.');
+      button.setAttribute('aria-label', button.dataset.label + '. Step open.');
+      showCard(key);
       caption.textContent = descriptions[key].caption;
-      announcement.textContent = descriptions[key].announcement;
+      announcement.textContent = cardText(key) + ' ' + descriptions[key].announcement;
+      updateProgress();
       if (revealed.size === buttons.length) completeRoom();
     } catch (_) {
       if (epoch !== expectedEpoch) return;
       errorMessage.hidden = false;
       caption.textContent = oldCaption;
-      announcement.textContent = 'The memory image could not load. Choose an object again to retry.';
+      announcement.textContent = 'The memory image could not load. Choose a step again to retry.';
     } finally {
       window.clearTimeout(loadingNotice);
       if (epoch === expectedEpoch) {
@@ -164,9 +197,11 @@
       button.setAttribute('aria-label', button.dataset.initialLabel);
     });
     errorMessage.hidden = true;
-    caption.textContent = 'Some rooms never really leave us.';
-    announcement.textContent = 'The room is black and white again. Choose any of the four objects to reveal its memory.';
+    showCard(null);
+    caption.textContent = restingCaption;
+    announcement.textContent = 'The room is black and white again. Choose any of the four steps to open it.';
     updateReset();
+    updateProgress();
     buttons[0].focus({ preventScroll: true });
     resetTimer = window.setTimeout(() => room.classList.remove('is-resetting'), reducedMotion.matches ? 0 : 1000);
   });
