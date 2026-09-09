@@ -425,82 +425,20 @@
       transform-origin: 50% 50%;
     }
 
-    .aperture__lede-row {
-      display: grid;
-      grid-template-columns: minmax(7rem, .55fr) minmax(0, 4fr);
-      gap: clamp(1.5rem, 4vw, 5rem);
-      align-items: start;
-    }
+    .aperture__lede-row { display: block; }
 
-    .aperture__eyebrow {
-      margin: .55rem 0 0;
-      color: #6b4c22;
-      font-size: .7rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-
+    /* One statement, alone behind the aperture, so it is set to fill the open
+       stage rather than to sit beside anything. Both axes govern the size, as
+       everywhere else here: the stage is exactly one viewport tall. */
     .aperture__lede {
-      max-width: 47ch;
+      max-width: min(40ch, 62vw);
       margin: 0;
       font-family: var(--display);
-      font-size: clamp(1.55rem, min(2.85vw, 4.35vh), 3.05rem);
+      font-size: clamp(1.6rem, min(4.6vw, 7vh), 4.6rem);
       font-weight: 300;
-      letter-spacing: -.014em;
-      line-height: 1.15;
+      letter-spacing: -.02em;
+      line-height: 1.08;
       text-wrap: pretty;
-    }
-
-    .movements {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: clamp(1.75rem, 4.4vw, 5.5rem);
-      margin: clamp(2.5rem, 6.5vh, 5.25rem) 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .movement {
-      position: relative;
-      padding-top: clamp(1.15rem, 2.2vh, 1.75rem);
-    }
-
-    .movement::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      height: 1px;
-      background: linear-gradient(90deg, #765729 0%, rgba(107,76,34,.12) 100%);
-    }
-
-    .movement__numeral {
-      display: block;
-      margin-bottom: .5rem;
-      color: #6b4c22;
-      font-family: var(--display);
-      font-size: .92rem;
-      letter-spacing: .24em;
-      line-height: 1;
-    }
-
-    .movement h3 {
-      margin: 0;
-      font-family: var(--display);
-      font-size: clamp(1.45rem, min(2.1vw, 3.2vh), 2.3rem);
-      font-style: italic;
-      font-weight: 400;
-      letter-spacing: -.008em;
-      line-height: 1;
-    }
-
-    .movement p {
-      max-width: 40ch;
-      margin: .9rem 0 0;
-      color: #514b3f;
-      font-size: clamp(.85rem, min(1vw, 1.7vh), .98rem);
-      line-height: 1.64;
     }
 
     /* With the script running, the section becomes scroll distance and the
@@ -666,41 +604,14 @@
 
       .js .aperture__stage { padding: clamp(1.25rem, 4vh, 3.25rem) 0; }
 
-      .aperture__lede-row {
-        grid-template-columns: 1fr;
-        gap: .7rem;
-      }
-
-      .aperture__eyebrow { margin-top: 0; }
-
-      /* Every size below is governed by the shorter axis as well as the wider
-         one, so the composition fits the aperture on a small phone without a
-         breakpoint for each handset. */
+      /* The size is governed by the shorter axis as well as the wider one, so
+         the statement fits the aperture on a small phone without a breakpoint
+         for each handset. A phone column is already a measure; nothing is held
+         back off it. */
       .aperture__lede {
-        font-size: clamp(1rem, min(5.3vw, 2.55vh), 2.05rem);
-        line-height: 1.18;
-      }
-
-      .movements {
-        grid-template-columns: 1fr;
-        gap: clamp(.8rem, 2.3vh, 2rem);
-        margin-top: clamp(1rem, 3.4vh, 2.9rem);
-      }
-
-      .movement { padding-top: clamp(.55rem, 1.6vh, 1.15rem); }
-
-      .movement__numeral {
-        margin-bottom: .28rem;
-        font-size: clamp(.68rem, min(3vw, 1.4vh), .82rem);
-      }
-
-      .movement h3 { font-size: clamp(.88rem, min(4.5vw, 2.15vh), 1.65rem); }
-
-      .movement p {
-        max-width: 54ch;
-        margin-top: .45rem;
-        font-size: clamp(.72rem, min(3.4vw, 1.65vh), .95rem);
-        line-height: 1.48;
+        max-width: none;
+        font-size: clamp(1.3rem, min(9.4vw, 4.8vh), 3.6rem);
+        line-height: 1.12;
       }
 
       .contact__card {
@@ -786,32 +697,13 @@
       }
     }
 
-    /* Handsets held sideways: three columns again, since height is the scarce
-       axis there and the row is a third of the height of the stack. */
+    /* Handsets held sideways, where height is the scarce axis: the statement
+       is sized off it alone. */
     @media (max-width: 1040px) and (min-width: 600px) and (max-height: 640px) {
       .hero h1 { max-width: 18ch; font-size: clamp(2rem, 7.6vh, 3.6rem); }
       .hero__content { bottom: clamp(3.25rem, 9vh, 5rem); }
 
-      .aperture__lede-row {
-        grid-template-columns: minmax(5.5rem, .5fr) minmax(0, 4fr);
-        gap: clamp(1rem, 3vw, 2rem);
-      }
-
-      .aperture__eyebrow { margin-top: .25rem; }
-      .aperture__lede { font-size: clamp(1rem, 4.4vh, 1.5rem); }
-
-      .movements {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: clamp(1rem, 3vw, 2.5rem);
-        margin-top: clamp(1rem, 3.2vh, 1.9rem);
-      }
-
-      .movement p { max-width: 34ch; font-size: clamp(.7rem, 2vh, .84rem); }
-    }
-
-    /* Below this the copy column is too narrow to hold the arrows and the six
-       numerals on one line, so the numerals take a line of their own. */
-    @media (max-width: 1200px) {
+      .aperture__lede { max-width: min(40ch, 66vw); font-size: clamp(1.1rem, 7vh, 2.6rem); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -825,7 +717,7 @@
       .reveal { opacity: 1; transform: none; }
     }
   </style>
-  <link rel="stylesheet" href="assets/memory-room.css?v=4">
+  <link rel="stylesheet" href="assets/memory-room.css?v=5">
 </head>
 
 <body>
@@ -901,27 +793,8 @@
 
         <div class="aperture__inner">
           <div class="aperture__lede-row">
-            <p class="aperture__eyebrow">The experience</p>
-            <p class="aperture__lede">General Memory is a private, white-glove experience that helps you hold on to the memories that matter. Through thoughtful interviews and the highest levels of craftsmanship, we turn your life stories into beautiful objects designed to last generations.</p>
+            <p class="aperture__lede">General Memory is a bespoke luxury experience for you to preserve your favourite memories. We sit with you to listen to your stories and then turn them into beautiful objects designed to grow with you and last generations.</p>
           </div>
-
-          <ol class="movements">
-            <li class="movement">
-              <span class="movement__numeral">I</span>
-              <h3>Remember</h3>
-              <p>We help you reconnect with the old memories that you forgot existed but that remind you of the wonderful life you've lived.</p>
-            </li>
-            <li class="movement">
-              <span class="movement__numeral">II</span>
-              <h3>Recover</h3>
-              <p>Your life stories are spread out all across many photos, letters, and souvenirs. We work with you and your loved ones to consolidate them into a collection that will never go missing again.</p>
-            </li>
-            <li class="movement">
-              <span class="movement__numeral">III</span>
-              <h3>Record</h3>
-              <p>By the end of the journey, you will have a set of objects, custom-built to suit your preferred ways of reminiscing, that will never go missing and which will continue growing with you as you make new memories.</p>
-            </li>
-          </ol>
         </div>
       </div>
     </section>
@@ -930,15 +803,13 @@
       <span class="seam-tick seam-tick--next" aria-hidden="true"></span>
       <header class="memory-intro">
         <div>
-          <p class="memory-kicker">How a commission unfolds</p>
-          <h2 id="artefacts-title">Four steps<br>to <em>live it again.</em></h2>
+          <h2 id="artefacts-title">How we<br><em>work with you.</em></h2>
         </div>
       </header>
 
       <div class="memory-exhibit">
         <div class="memory-exhibit__top">
-          <p>An imagined home, Singapore, c. 1955</p>
-          <span id="roomProgress">Four steps</span>
+          <button class="memory-reset" type="button" disabled aria-label="Start the four steps again, with the room back in black and white">Start again</button>
         </div>
         <div class="memory-stage">
           <div class="memory-room" id="memoryRoom" role="group" aria-label="The four steps of a General Memory commission, shown in a Peranakan living room" aria-describedby="roomInstructions">
@@ -976,17 +847,17 @@
             <article class="memory-step memory-step--window" data-step="window">
               <p class="memory-step__index">Step one</p>
               <h3>Interviews</h3>
-              <p>We begin by listening. A series of unhurried conversations &mdash; many hours, across several sittings, with you and with the people who share your story &mdash; until the shape of a life comes through.</p>
+              <p>We begin by listening. A series of unhurried conversations &mdash; many hours, across several sittings, with you and with the people who share your story &mdash; until we're confident we can tell the best version of the wonderful life you have lived.</p>
             </article>
             <article class="memory-step memory-step--table" data-step="table">
               <p class="memory-step__index">Step two</p>
               <h3>Collecting your things</h3>
-              <p>Our team comes to you and gathers everything: documents, photographs, the videos taken over the years, letters, keepsakes. We store them safely, arrange and curate them, and make sense of them for you.</p>
+              <p>Our team comes to you and gathers everything you give us access to: documents, photographs, the videos taken over the years, letters, keepsakes. We make secure digital copies of them to store, so you'll never have to wonder where they are anymore.</p>
             </article>
             <article class="memory-step memory-step--shelf" data-step="shelf">
               <p class="memory-step__index">Step three</p>
               <h3>Crafting your memories</h3>
-              <p>Then four to six weeks at the bench. Everything learned in the interviews and everything gathered becomes a set of beautiful objects, designed to hold your memories and life stories &mdash; and to keep growing with them.</p>
+              <p>Over the four to six weeks that follow, our team of expert craftsmen and designers transform your life stories into beautiful objects that tell your story. Whether it's a hardcopy book, a website, a mobile app or any other physical form, we give you something that ensures you get to relive your best memories whenever you want.</p>
             </article>
             <article class="memory-step memory-step--settee" data-step="settee">
               <p class="memory-step__index">Step four</p>
@@ -997,12 +868,10 @@
         </div>
         <div class="memory-exhibit__bottom">
           <p class="memory-room__caption" id="roomCaption">Four steps, and the room comes back.</p>
-          <button class="memory-reset" id="memoryReset" type="button" disabled aria-label="Return the room to black and white">Begin again</button>
+          <button class="memory-reset" type="button" disabled aria-label="Start the four steps again, with the room back in black and white">Start again</button>
         </div>
         <p class="memory-sr" id="roomAnnouncement" role="status" aria-live="polite" aria-atomic="true"></p>
       </div>
-
-      <p class="memory-note">This room and its memories are imagined. Every commission begins with your life.</p>
     </section>
 
 
@@ -1637,6 +1506,6 @@
       document.querySelectorAll('.reveal').forEach(element => element.classList.add('is-visible'));
     }
   </script>
-  <script src="assets/memory-room.js?v=4" defer></script>
+  <script src="assets/memory-room.js?v=5" defer></script>
 </body>
 </html>

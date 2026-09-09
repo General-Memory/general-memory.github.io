@@ -11,9 +11,9 @@
   const buttons = [...room.querySelectorAll('[data-memory]')];
   const layers = [...room.querySelectorAll('[data-recollection]')];
   const cards = [...document.querySelectorAll('#roomSteps [data-step]')];
-  const progress = document.getElementById('roomProgress');
   const fullScene = document.getElementById('roomComplete');
-  const resetButton = document.getElementById('memoryReset');
+  // One above the picture and one below it; either takes the tour back to the start.
+  const resetButtons = [...document.querySelectorAll('.memory-reset')];
   const caption = document.getElementById('roomCaption');
   const announcement = document.getElementById('roomAnnouncement');
   const errorMessage = document.getElementById('roomImageError');
@@ -47,7 +47,6 @@
   // swings wider to keep clear of the card standing open beside the shelf.
   const guideDepth = { window: .17, table: .17, shelf: .26 };
   const restingCaption = caption.textContent;
-  const restingProgress = progress.textContent;
   const handOffDelay = 900;
   const drawDelay = 420;
   let imageReady = null;
@@ -112,19 +111,14 @@
   }
 
   function updateReset() {
-    resetButton.disabled = revealed.size === 0 && pending.size === 0;
+    const idle = revealed.size === 0 && pending.size === 0;
+    resetButtons.forEach(button => { button.disabled = idle; });
   }
 
   // One card at a time: the step just chosen. The room stays legible, and the
   // tour reads in the order the steps are numbered.
   function showCard(key) {
     cards.forEach(card => card.classList.toggle('is-current', card.dataset.step === key));
-  }
-
-  function updateProgress() {
-    if (!revealed.size) progress.textContent = restingProgress;
-    else if (revealed.size === buttons.length) progress.textContent = 'All four steps';
-    else progress.textContent = revealed.size + ' of 4 steps';
   }
 
   // Read the card aloud in parts, so the step number and title do not run into
@@ -347,7 +341,6 @@
           renderGuide(true);
         }, pace + (reducedMotion.matches ? 0 : drawDelay));
       }
-      updateProgress();
       if (revealed.size === buttons.length) completeRoom();
     } catch (_) {
       if (epoch !== expectedEpoch) return;
@@ -371,7 +364,7 @@
     button.addEventListener('click', event => revealMemory(button, event.detail === 0));
   });
 
-  resetButton.addEventListener('click', () => {
+  function restart() {
     epoch += 1;
     window.clearTimeout(completeTimer);
     window.clearTimeout(resetTimer);
@@ -395,10 +388,11 @@
     caption.textContent = restingCaption;
     announcement.textContent = 'The room is black and white again. Step one is ready.';
     updateReset();
-    updateProgress();
     buttons[0].focus({ preventScroll: true });
     resetTimer = window.setTimeout(() => room.classList.remove('is-resetting'), reducedMotion.matches ? 0 : 1000);
-  });
+  }
+
+  resetButtons.forEach(button => button.addEventListener('click', restart));
 
   // Redrawn rather than rescaled: the arc is struck in the room's own pixels, so
   // a resize, a late font or a reflowed chip all ask for fresh geometry.
