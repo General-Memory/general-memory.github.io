@@ -1,15 +1,13 @@
 /* A single still room. Memories arrive; the camera never moves. */
 .artefacts{position:relative;z-index:2;border-top:1px solid rgba(192,154,87,calc(.16 + var(--open)*.52));box-shadow:0 -1.4rem 3.4rem #000a;padding:clamp(4rem,7vw,7rem) var(--gutter) clamp(3.5rem,7vw,7rem);background:var(--dark);overflow:hidden}
-.memory-intro,.memory-exhibit,.memory-note{position:relative;z-index:3;max-width:1320px;margin-inline:auto}
+.memory-intro,.memory-exhibit{position:relative;z-index:3;max-width:1320px;margin-inline:auto}
 .memory-intro{padding-bottom:clamp(2rem,4vw,3.5rem)}
-.memory-kicker{margin:0 0 1.25rem;color:#cbb386;font-size:.875rem;font-weight:400;letter-spacing:.14em;text-transform:uppercase}
 .memory-intro h2{margin:0;font:300 clamp(2.6rem,4.6vw,5rem)/.99 var(--display);letter-spacing:-.025em}
 .memory-intro h2 em{font-weight:300;color:#c9b58d}
 .memory-exhibit{border:1px solid #595d4b;background:#121611}
 .memory-exhibit__top,.memory-exhibit__bottom{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 1.35rem}
-.memory-exhibit__top{border-bottom:1px solid #595d4b}
-.memory-exhibit__top p{margin:0;color:#d1c6ae;font-size:.875rem}
-.memory-exhibit__top span{color:#b1b5a7;font-size:.875rem}
+/* The top rail carries only the way back to the beginning. */
+.memory-exhibit__top{justify-content:flex-end;padding-block:.35rem;border-bottom:1px solid #595d4b}
 .memory-room{position:relative;overflow:hidden;aspect-ratio:3/2;isolation:isolate;background:#252821}
 /* The canvas is the measure for everything drawn on it: chip type scales with
    the room, not the viewport. */
@@ -47,7 +45,7 @@
 /* The glow sits behind the pill and bleeds a little warmth onto the picture. */
 .memory-hotspot__chip::before{content:'';position:absolute;z-index:-1;inset:-1.45em -1.15em;border-radius:999px;background:radial-gradient(closest-side,#f4dfae52,#f4dfae00 76%);opacity:.34;transition:opacity .6s ease,scale .6s ease;pointer-events:none}
 .memory-hotspot__face{--chip-bg:#0d120edb;--chip-fg:#f7eed9;--chip-line:#ecd9ab5e;position:relative;display:inline-flex;align-items:center;gap:.55em;padding:.36em .95em .36em .36em;border:1px solid var(--chip-line);border-radius:999px;background:var(--chip-bg);color:var(--chip-fg);font-family:var(--text);line-height:1.3;letter-spacing:.004em;white-space:nowrap;box-shadow:0 .6rem 1.5rem -.45rem #000000c2,0 .1rem .35rem #00000078,0 0 1.9rem -.6rem #f0d49c94,inset 0 1px 0 #fff4da21;-webkit-backdrop-filter:blur(6px) saturate(1.08);backdrop-filter:blur(6px) saturate(1.08);transition:background .4s ease,color .4s ease,border-color .4s ease,box-shadow .5s ease,scale .4s cubic-bezier(.2,.8,.3,1),padding .75s cubic-bezier(.2,.8,.3,1),gap .75s cubic-bezier(.2,.8,.3,1)}
-.memory-hotspot__num{flex:none;display:grid;place-items:center;width:1.7em;height:1.7em;border:1px solid #e6cf9f7a;border-color:color-mix(in srgb,currentColor 40%,transparent);border-radius:50%;background:#eacf9c1a;background:color-mix(in srgb,currentColor 11%,transparent);font-family:var(--display);font-size:1.05em;line-height:1;letter-spacing:.01em}
+.memory-hotspot__num{flex:none;display:grid;place-items:center;width:1.7em;height:1.7em;border:1px solid #e6cf9f7a;border-color:color-mix(in srgb,currentColor 40%,transparent);border-radius:50%;background:#eacf9c1a;background:color-mix(in srgb,currentColor 11%,transparent);font-family:var(--display);font-size:1.2em;font-weight:500;font-variant-numeric:lining-nums;font-feature-settings:'lnum' 1;line-height:1;letter-spacing:.01em}
 .memory-hotspot__text{display:block;overflow:hidden;max-width:26em;transition:max-width .75s cubic-bezier(.2,.8,.3,1),opacity .45s ease}
 /* The step waiting to be taken breathes, so the eye is never in doubt. */
 @keyframes memoryChipBreath{0%,100%{scale:1}50%{scale:1.028}}
@@ -64,7 +62,7 @@
 .memory-hotspot:focus-visible .memory-hotspot__face{outline:1px solid #ead3a1;outline-offset:.28em}
 /* A step already taken folds back to its numeral and keeps its place quietly. */
 .memory-hotspot.is-revealed{pointer-events:none}
-.memory-hotspot.is-revealed .memory-hotspot__chip{opacity:.5}
+.memory-hotspot.is-revealed .memory-hotspot__chip{opacity:.56}
 .memory-hotspot.is-revealed .memory-hotspot__chip::before{opacity:0;animation:none}
 .memory-hotspot.is-revealed .memory-hotspot__face{--chip-bg:#0d120eb8;--chip-line:#e9d5a63d;gap:0;padding:.36em;box-shadow:0 .3rem .8rem -.25rem #0000009e,inset 0 1px 0 #fff4da16;animation:none}
 .memory-hotspot.is-revealed .memory-hotspot__text{max-width:0;opacity:0}
@@ -93,12 +91,12 @@
 .memory-reset{flex:0 0 auto;border:0;border-bottom:1px solid #9b9e8866;padding:.5rem 0;min-height:44px;background:none;color:#e2d3b5;font-size:.875rem;cursor:pointer}
 .memory-reset:disabled{opacity:.3;cursor:default}
 .memory-reset:not(:disabled):hover{border-color:#d8c191}
-.memory-note{margin:clamp(1.7rem,3vw,2.6rem) auto 0;color:#a5aa9b;font-size:.9375rem;line-height:1.65}
 .memory-scene-error{position:absolute;inset:auto 5% 7%;z-index:6;margin:0;padding:.8rem 1rem;background:#111713f5;border:1px solid #bfa373;color:#eadfc9;font-size:1rem;text-align:center}
 .memory-scene-error[hidden]{display:none}
 .memory-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 html:not(.js) .reveal{opacity:1;transform:none}
-html:not(.js) .memory-reset,html:not(.js) #roomInstructions{display:none}
+/* Without the script the rail carries nothing, and the tour is a plain list. */
+html:not(.js) .memory-reset,html:not(.js) .memory-exhibit__top,html:not(.js) #roomInstructions{display:none}
 html:not(.js) .memory-steps{position:static}
 html:not(.js) .memory-step{position:static;width:auto;min-width:0;max-width:none;transform:none;opacity:1;visibility:visible;border-width:1px 0 0;background:#121611;box-shadow:none}
 html:not(.js) .memory-step::before{display:none}
@@ -116,15 +114,13 @@ html:not(.js) .memory-step::before{display:none}
 }
 @media(max-width:600px){
 .artefacts{padding:3.5rem 1.1rem}.memory-intro{padding-inline:.2rem}
-.memory-kicker{font-size:.875rem;letter-spacing:.11em;margin-bottom:1rem}
 .memory-intro h2{font-size:clamp(2.5rem,9.9vw,3.6rem)}
-.memory-exhibit{margin-inline:-.8rem}.memory-exhibit__top{padding:.8rem}.memory-exhibit__top span{display:none}
+.memory-exhibit{margin-inline:-.8rem}.memory-exhibit__top{padding:.3rem .8rem}
 /* Keep the entire window and shelf visible on phones. */
 .memory-room{aspect-ratio:3/2}
 .memory-hotspot{min-width:44px;min-height:44px}
 .memory-exhibit__bottom{gap:.8rem;padding:.7rem .8rem;min-height:5.5rem;align-items:center}
 .memory-room__caption{font-size:1.125rem;line-height:1.4}
-.memory-note{padding-inline:.2rem;font-size:.875rem}
 .memory-scene-error{font-size:.9375rem}
 }
 /* The longest step name has to sit inside the picture at any size. */
