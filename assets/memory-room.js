@@ -19,8 +19,11 @@
   const announcement = document.getElementById('roomAnnouncement');
   const errorMessage = document.getElementById('roomImageError');
   const guide = document.getElementById('roomGuide');
-  const guideLine = document.getElementById('roomGuideLine');
-  const guideHead = document.getElementById('roomGuideHead');
+  const slots = [...guide.querySelectorAll('.memory-guide__link')].map(group => ({
+    group,
+    line: group.querySelector('.memory-guide__line'),
+    head: group.querySelector('.memory-guide__head')
+  }));
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const revealed = new Set();
   const pending = new Set();
@@ -57,7 +60,7 @@
   let drawTimer = null;
   let guideSettleTimer = null;
   let guideClearTimer = null;
-  let guidePair = null;
+  let guideLinks = [];
   let guideDrawing = false;
   let guideStale = false;
   let summaryTimer = null;
@@ -167,119 +170,194 @@
     return { cx: outer.x + inner.x + w / 2, cy: outer.y + inner.y + h / 2, w, h };
   }
 
-  // Where a ray towards (tx, ty) leaves the chip, held off by a small gap.
-  function edgeOf(box, tx, ty, gap) {
+  /* Where an arc meets a box: on the face that most directly looks at the other
+     end of it, held off by a small gap. A step chip is a long, low pill, and
+     taking the geometric exit of a ray from its middle would put the barb over
+     the top of it, flying along its length; docking on the face it presents
+     lands the barb on the end of the pill, pointing into it. */
+  function dockOf(box, tx, ty, gap) {
     const dx = tx - box.cx;
     const dy = ty - box.cy;
-    const reachX = dx ? (box.w / 2 + gap) / Math.abs(dx) : Infinity;
-    const reachY = dy ? (box.h / 2 + gap) / Math.abs(dy) : Infinity;
-    const reach = Math.min(reachX, reachY);
-    return { x: box.cx + dx * reach, y: box.cy + dy * reach };
+    const inset = Math.min(10, box.w / 2, box.h / 2);
+    const held = (value, middle, half) => Math.min(Math.max(value, middle - half + inset), middle + half - inset);
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      const along = dx ? box.cy + dy * ((box.w / 2) / Math.abs(dx)) : box.cy;
+      return {
+        x: box.cx + (dx >= 0 ? 1 : -1) * (box.w / 2 + gap),
+        y: held(along, box.cy, box.h / 2)
+      };
+    }
+    const along = dy ? box.cx + dx * ((box.h / 2) / Math.abs(dy)) : box.cx;
+    return {
+      x: held(along, box.cx, box.w / 2),
+      y: box.cy + (dy >= 0 ? 1 : -1) * (box.h / 2 + gap)
+    };
   }
 
-  function renderGuide(animate) {
-    if (!guidePair) return;
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    if (!width || !height) return;
-    const from = chipBox(guidePair.from);
-    const to = chipBox(guidePair.to);
-    const start = edgeOf(from, to.cx, to.cy, Math.max(9, width * .008));
-    const end = edgeOf(to, from.cx, from.cy, Math.max(12, width * .011));
+  function cardBox(card) {
+    const at = laidOutAt(card);
+    return { cx: at.x + card.offsetWidth / 2, cy: at.y + card.offsetHeight / 2, w: card.offsetWidth, h: card.offsetHeight };
+  }
+
+  function boxOf(element, kind) {
+    return kind === 'card' ? cardBox(element) : chipBox(element);
+  }
+
+  // One arc: out of the first box, around the outside of the room, into the
+  // second. The last control point is held close to the chord so the barb
+  // always arrives pointing into what it is aimed at, never past it.
+  function arcFor(link, width, height) {
+    const from = boxOf(link.from, link.kind);
+    const to = boxOf(link.to, link.kind);
+    const start = dockOf(from, to.cx, to.cy, Math.max(9, width * .008));
+    const end = dockOf(to, from.cx, from.cy, Math.max(12, width * .011));
     const vx = end.x - start.x;
     const vy = end.y - start.y;
     const span = Math.hypot(vx, vy);
-    if (span < 30) return;
-    // Bow the arc away from the middle of the room, where the memories are.
+    if (span < 30) return null;
     let nx = -vy / span;
     let ny = vx / span;
     if (nx * ((start.x + end.x) / 2 - width / 2) + ny * ((start.y + end.y) / 2 - height / 2) < 0) {
       nx = -nx;
       ny = -ny;
     }
-    // A short hand-off wants a gentler sweep than a long one, or the arc curls
-    // into a hook in the small space it has.
-    const ease = Math.min(1, span / (Math.max(width, height) * .38));
-    const bow = Math.min(span * guidePair.depth * ease, height * .17);
+    // A short hand-off across an open room keeps its curve; one squeezed into a
+    // small gap is eased flat, or it curls into a hook.
+    const ease = link.taper === false ? 1 : Math.min(1, span / (Math.max(width, height) * .38));
+    const bow = Math.min(span * link.depth * ease, height * .17);
     const rein = Math.max(8, width * .006);
     const hold = point => ({
       x: Math.min(Math.max(point.x, rein), width - rein),
       y: Math.min(Math.max(point.y, rein), height - rein)
     });
     const first = hold({ x: start.x + vx * .28 + nx * bow, y: start.y + vy * .28 + ny * bow });
-    const second = hold({ x: start.x + vx * .70 + nx * bow * .85, y: start.y + vy * .70 + ny * bow * .85 });
+    /* The arc leaves bowing outward and arrives aimed: the last control point is
+       set off the end along the way in, blending the run of the chord with the
+       line to the middle of what is being pointed at, so the barb lands in it
+       however tight the hop. */
+    const middleX = to.cx - end.x;
+    const middleY = to.cy - end.y;
+    const middleLen = Math.hypot(middleX, middleY) || 1;
+    const aimX = (vx / span) * .65 + (middleX / middleLen) * .5;
+    const aimY = (vy / span) * .65 + (middleY / middleLen) * .5;
+    const aimLen = Math.hypot(aimX, aimY) || 1;
+    const reach = Math.max(span * .22, 18);
+    const second = hold({ x: end.x - (aimX / aimLen) * reach, y: end.y - (aimY / aimLen) * reach });
     const angle = Math.atan2(end.y - second.y, end.x - second.x);
     const barb = Math.max(7, width * .0088);
     const spread = .42;
-    guide.setAttribute('viewBox', '0 0 ' + round(width) + ' ' + round(height));
-    guideLine.setAttribute('d', 'M' + round(start.x) + ' ' + round(start.y) +
-      'C' + round(first.x) + ' ' + round(first.y) +
-      ' ' + round(second.x) + ' ' + round(second.y) +
-      ' ' + round(end.x) + ' ' + round(end.y));
-    guideHead.setAttribute('d', 'M' + round(end.x - barb * Math.cos(angle - spread)) + ' ' + round(end.y - barb * Math.sin(angle - spread)) +
-      'L' + round(end.x) + ' ' + round(end.y) +
-      'L' + round(end.x - barb * Math.cos(angle + spread)) + ' ' + round(end.y - barb * Math.sin(angle + spread)));
-    const stroke = Math.max(1.15, width * .0013).toFixed(2);
-    guideLine.style.strokeWidth = stroke;
-    guideHead.style.strokeWidth = stroke;
+    return {
+      line: 'M' + round(start.x) + ' ' + round(start.y) +
+        'C' + round(first.x) + ' ' + round(first.y) +
+        ' ' + round(second.x) + ' ' + round(second.y) +
+        ' ' + round(end.x) + ' ' + round(end.y),
+      head: 'M' + round(end.x - barb * Math.cos(angle - spread)) + ' ' + round(end.y - barb * Math.sin(angle - spread)) +
+        'L' + round(end.x) + ' ' + round(end.y) +
+        'L' + round(end.x - barb * Math.cos(angle + spread)) + ' ' + round(end.y - barb * Math.sin(angle + spread))
+    };
+  }
 
-    let length = 0;
-    try {
-      length = guideLine.getTotalLength();
-    } catch (_) {
-      // Without a measurable path the arc simply appears whole.
+  function renderGuide(animate) {
+    if (!guideLinks.length) return;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (!width || !height) return;
+    // Below the breakpoint the recap cards stand under the picture, out of the
+    // canvas the arcs are struck in; there the chevrons between them do the work.
+    if (guideLinks[0].kind === 'card' && window.getComputedStyle(stepsPanel).position !== 'absolute') {
+      guide.classList.remove('is-visible');
+      return;
     }
-    if (animate && length && !reducedMotion.matches) {
-      guideDrawing = true;
-      guideLine.style.transition = 'none';
-      guideLine.style.strokeDasharray = length;
-      guideLine.style.strokeDashoffset = length;
-      guideLine.getBoundingClientRect();
-      guideLine.style.transition = '';
-      guideLine.style.strokeDashoffset = '0';
-      guide.classList.remove('is-drawn');
-      window.clearTimeout(guideSettleTimer);
-      guideSettleTimer = window.setTimeout(() => {
-        guideDrawing = false;
-        if (guideStale) {
-          guideStale = false;
-          renderGuide(false);
-        }
-      }, 1100);
-    } else {
-      guideLine.style.transition = 'none';
-      guideLine.style.strokeDasharray = 'none';
-      guideLine.style.strokeDashoffset = '0';
-    }
+    const stroke = Math.max(1.15, width * .0013).toFixed(2);
+    guide.setAttribute('viewBox', '0 0 ' + round(width) + ' ' + round(height));
+    let drawn = false;
+    slots.forEach((slot, index) => {
+      const link = guideLinks[index];
+      const arc = link ? arcFor(link, width, height) : null;
+      if (!arc) {
+        slot.line.setAttribute('d', '');
+        slot.head.setAttribute('d', '');
+        slot.group.classList.remove('is-drawn');
+        return;
+      }
+      drawn = true;
+      slot.line.setAttribute('d', arc.line);
+      slot.head.setAttribute('d', arc.head);
+      slot.line.style.strokeWidth = stroke;
+      slot.head.style.strokeWidth = stroke;
+      const delay = link.delay || 0;
+      let length = 0;
+      try {
+        length = slot.line.getTotalLength();
+      } catch (_) {
+        // Without a measurable path the arc simply appears whole.
+      }
+      if (animate && length && !reducedMotion.matches) {
+        slot.line.style.transition = 'none';
+        slot.line.style.strokeDasharray = length;
+        slot.line.style.strokeDashoffset = length;
+        slot.line.getBoundingClientRect();
+        slot.line.style.transition = '';
+        slot.line.style.transitionDelay = delay + 'ms';
+        slot.head.style.transitionDelay = (delay + 620) + 'ms';
+        slot.line.style.strokeDashoffset = '0';
+        slot.group.classList.remove('is-drawn');
+      } else {
+        slot.line.style.transition = 'none';
+        slot.line.style.strokeDasharray = 'none';
+        slot.line.style.strokeDashoffset = '0';
+        slot.line.style.transitionDelay = '';
+        slot.head.style.transitionDelay = '';
+        slot.group.classList.add('is-drawn');
+      }
+    });
+    if (!drawn) return;
     window.clearTimeout(guideClearTimer);
     guide.classList.add('is-visible');
-    if (animate && !reducedMotion.matches) {
-      window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
-        if (guidePair) guide.classList.add('is-drawn');
-      }));
-    } else {
-      guide.classList.add('is-drawn');
-    }
+    if (!animate || reducedMotion.matches) return;
+    const longest = guideLinks.reduce((most, link) => Math.max(most, link.delay || 0), 0);
+    guideDrawing = true;
+    window.clearTimeout(guideSettleTimer);
+    guideSettleTimer = window.setTimeout(() => {
+      guideDrawing = false;
+      if (guideStale) {
+        guideStale = false;
+        renderGuide(false);
+      }
+    }, longest + 1100);
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      if (guideLinks.length) slots.forEach(slot => slot.group.classList.add('is-drawn'));
+    }));
   }
 
   function clearGuide() {
     window.clearTimeout(guideSettleTimer);
-    guidePair = null;
+    guideLinks = [];
     guideDrawing = false;
     guideStale = false;
     // An arc already fading out keeps the timer that empties it.
     if (!guide.classList.contains('is-visible')) return;
     window.clearTimeout(guideClearTimer);
-    guide.classList.remove('is-visible', 'is-drawn');
+    guide.classList.remove('is-visible');
+    slots.forEach(slot => slot.group.classList.remove('is-drawn'));
     guideClearTimer = window.setTimeout(() => {
-      guideLine.setAttribute('d', '');
-      guideHead.setAttribute('d', '');
+      slots.forEach(slot => {
+        slot.line.setAttribute('d', '');
+        slot.head.setAttribute('d', '');
+      });
     }, reducedMotion.matches ? 0 : 520);
   }
 
   /* ── The sequence ─────────────────────────────────────────────────────────
      Only the step whose turn it is stands in the room. Taking it brings the
      next one forward. */
+
+  // West, south, east, then the card already standing in the north.
+  const recapOrder = ['window', 'table', 'shelf', 'settee'];
+
+  function cardFor(key) {
+    return cards.find(card => card.dataset.step === key);
+  }
 
   function offer(button, moveFocus) {
     button.classList.add('is-available', 'is-next');
@@ -295,19 +373,27 @@
       room.classList.add('is-complete');
       caption.textContent = 'Four steps. A room is made of the life inside it.';
       announcement.textContent = 'All four steps are open. The whole room is now in colour, and the four steps are shown together, in order.';
-      // The last card steps aside, and the four of them come back as one recap.
-      showCard(null);
+      // A beat to take in the fourth card, which keeps its place; then the other
+      // three take theirs around it and the arcs are drawn between all four.
       summaryTimer = window.setTimeout(() => {
         if (epoch !== expectedEpoch || revealed.size !== buttons.length) return;
         stepsPanel.classList.add('is-summary');
-        if (reducedMotion.matches) {
-          stepsPanel.classList.add('is-lit');
-          return;
-        }
-        window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
-          if (stepsPanel.classList.contains('is-summary')) stepsPanel.classList.add('is-lit');
-        }));
-      }, reducedMotion.matches ? 0 : 620);
+        const light = () => stepsPanel.classList.contains('is-summary') && stepsPanel.classList.add('is-lit');
+        if (reducedMotion.matches) light();
+        else window.requestAnimationFrame(() => window.requestAnimationFrame(light));
+        summaryTimer = window.setTimeout(() => {
+          if (epoch !== expectedEpoch || !stepsPanel.classList.contains('is-summary')) return;
+          guideLinks = recapOrder.slice(0, -1).map((key, index) => ({
+            from: cardFor(key),
+            to: cardFor(recapOrder[index + 1]),
+            kind: 'card',
+            depth: .22,
+            taper: false,
+            delay: reducedMotion.matches ? 0 : index * 320
+          }));
+          renderGuide(true);
+        }, reducedMotion.matches ? 0 : 760);
+      }, reducedMotion.matches ? 0 : 900);
     }, reducedMotion.matches ? 0 : 2500);
   }
 
@@ -352,7 +438,7 @@
         }, pace);
         drawTimer = window.setTimeout(() => {
           if (epoch !== expectedEpoch || revealed.has(next.dataset.memory)) return;
-          guidePair = { from: button, to: next, depth: guideDepth[key] || .17 };
+          guideLinks = [{ from: button, to: next, kind: 'chip', depth: guideDepth[key] || .17, delay: 0 }];
           renderGuide(true);
         }, pace + (reducedMotion.matches ? 0 : drawDelay));
       }
@@ -415,12 +501,13 @@
   // a resize, a late font or a reflowed chip all ask for fresh geometry.
   if ('ResizeObserver' in window) {
     const watcher = new ResizeObserver(() => {
-      if (!guidePair) return;
+      if (!guideLinks.length) return;
       if (guideDrawing) { guideStale = true; return; }
       renderGuide(false);
     });
     watcher.observe(canvas);
     buttons.forEach(button => watcher.observe(button.querySelector('.memory-hotspot__chip')));
+    cards.forEach(card => watcher.observe(card));
   }
 
   function armFirstStep() {

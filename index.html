@@ -717,7 +717,7 @@
       .reveal { opacity: 1; transform: none; }
     }
   </style>
-  <link rel="stylesheet" href="assets/memory-room.css?v=6">
+  <link rel="stylesheet" href="assets/memory-room.css?v=7">
 </head>
 
 <body>
@@ -825,8 +825,9 @@
               <noscript><img class="memory-room__static" src="assets/memory-room/room-complete.webp?v=3" width="1536" height="1024" loading="lazy" alt="The room filled with family memories: children playing cards, a laughing family on the settee, a girl on tiptoes at the window, and trophies on the shelf."></noscript>
               <span class="memory-room__shade" aria-hidden="true"></span>
               <svg class="memory-guide" id="roomGuide" viewBox="0 0 1536 1024" aria-hidden="true" focusable="false">
-                <path class="memory-guide__line" id="roomGuideLine" d=""></path>
-                <path class="memory-guide__head" id="roomGuideHead" d=""></path>
+                <g class="memory-guide__link"><path class="memory-guide__line" d=""></path><path class="memory-guide__head" d=""></path></g>
+                <g class="memory-guide__link"><path class="memory-guide__line" d=""></path><path class="memory-guide__head" d=""></path></g>
+                <g class="memory-guide__link"><path class="memory-guide__line" d=""></path><path class="memory-guide__head" d=""></path></g>
               </svg>
               <button class="memory-hotspot memory-hotspot--window" type="button" data-memory="window" data-label="Step one, hearing and understanding your story" style="--x:11.5%;--y:35%;--hit-w:17%;--hit-h:45%" aria-label="Step one, hearing and understanding your story. Open this step.">
                 <span class="memory-hotspot__chip"><span class="memory-hotspot__face"><span class="memory-hotspot__num" aria-hidden="true">1</span><span class="memory-hotspot__text">Hearing and understanding your story</span></span></span>
@@ -1506,6 +1507,6 @@
       document.querySelectorAll('.reveal').forEach(element => element.classList.add('is-visible'));
     }
   </script>
-  <script src="assets/memory-room.js?v=6" defer></script>
+  <script src="assets/memory-room.js?v=7" defer></script>
 </body>
 </html>

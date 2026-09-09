@@ -31,7 +31,7 @@
 .memory-guide path{fill:none;stroke:#f0dcb0;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 .45rem #d9b87070) drop-shadow(0 1px 2px #00000082)}
 .memory-guide__line{transition:stroke-dashoffset 1s cubic-bezier(.25,.72,.28,1)}
 .memory-guide__head{opacity:0;transition:opacity .5s ease}
-.memory-guide.is-drawn .memory-guide__head{opacity:1;transition-delay:.6s}
+.memory-guide__link.is-drawn .memory-guide__head{opacity:1}
 /* Native buttons cover the objects in the room; the chip inside each one names
    the step and carries the whole visible affordance. */
 .memory-hotspot{position:absolute;z-index:4;left:var(--x);top:var(--y);display:none;width:var(--hit-w);height:var(--hit-h);min-width:48px;min-height:48px;padding:0;border:0;border-radius:0;background:transparent;color:#fff4dc;cursor:pointer;transform:translate(-50%,-50%);touch-action:manipulation;visibility:hidden;transition:visibility 0s linear .55s}
@@ -83,18 +83,17 @@
 .memory-step--window::before{left:-1.5rem;top:2rem;width:1.5rem;height:1px}
 .memory-step--shelf::before{right:-1.5rem;top:2rem;width:1.5rem;height:1px}
 .memory-step--table::before,.memory-step--settee::before{left:50%;bottom:-1.4rem;width:1px;height:1.4rem}
-/* Top-anchored with an auto height, so the four cards square off at the height
-   of the fullest one rather than stretching down the whole picture. */
-.memory-steps.is-summary{--summary-gap:clamp(1.5rem,2.4vw,2.75rem);bottom:auto;display:flex;align-items:stretch;gap:var(--summary-gap);padding:3.4% 2.4% 0}
-.memory-steps.is-summary .memory-step{position:relative;left:auto;top:auto;flex:1 1 0;width:auto;min-width:0;max-width:none;transform:none;visibility:visible;opacity:0;translate:0 12px;transition:opacity .9s ease,translate 1s cubic-bezier(.16,1,.3,1)}
-.memory-steps.is-summary.is-lit .memory-step{opacity:1;translate:0 0}
-.memory-steps.is-summary .memory-step:nth-child(2){transition-delay:.12s}
-.memory-steps.is-summary .memory-step:nth-child(3){transition-delay:.24s}
-.memory-steps.is-summary .memory-step:nth-child(4){transition-delay:.36s}
-/* The tick that pointed at an object becomes the line that points at the next step. */
+/* The recap. The fourth card holds the place it was read in, at the north of
+   the room; the first three take the west, south and east around it, so the
+   middle of the picture stays open and the four read as one round. */
+.memory-steps.is-summary .memory-step{max-width:none;visibility:visible;opacity:0;translate:0 10px;transition:opacity .9s ease,translate 1.05s cubic-bezier(.16,1,.3,1)}
 .memory-steps.is-summary .memory-step::before{display:none}
-.memory-steps.is-summary .memory-step + .memory-step::before{display:block;left:calc(-1 * var(--summary-gap));right:auto;top:2.15rem;width:var(--summary-gap);height:1px;background:linear-gradient(90deg,#f0dcb01f,#f0dcb0)}
-.memory-steps.is-summary .memory-step + .memory-step::after{content:'';position:absolute;left:-.42rem;top:2.15rem;width:.42rem;height:.42rem;border-top:1px solid #f0dcb0;border-right:1px solid #f0dcb0;transform:translateY(-50%) rotate(45deg)}
+.memory-steps.is-summary .memory-step--window{--sx:2%;--sy:52%;--tx:0;--ty:-50%;--sw:25%}
+.memory-steps.is-summary .memory-step--table{--sx:50%;--sy:96%;--tx:-50%;--ty:-100%;--sw:32%}
+.memory-steps.is-summary .memory-step--shelf{--sx:98%;--sy:52%;--tx:-100%;--ty:-50%;--sw:25%}
+.memory-steps.is-summary .memory-step.is-current,.memory-steps.is-summary.is-lit .memory-step{opacity:1;translate:0 0}
+.memory-steps.is-summary.is-lit .memory-step--table{transition-delay:.14s}
+.memory-steps.is-summary.is-lit .memory-step--shelf{transition-delay:.28s}
 .memory-step__index{margin:0 0 .55rem;color:#cbb386;font-size:.75rem;font-weight:400;letter-spacing:.16em;text-transform:uppercase}
 .memory-step h3{margin:0 0 .5rem;font:300 clamp(1.2rem,1.5vw,1.6rem)/1.12 var(--display);letter-spacing:-.01em;color:#f4ecda}
 .memory-step p{margin:0;font-size:.875rem;line-height:1.6;color:#c8c7b7}
@@ -120,10 +119,8 @@ html:not(.js) .memory-step::before{display:none}
 .js .memory-step{display:none}
 .js .memory-step.is-current,.js .memory-steps.is-summary .memory-step{display:block}
 .memory-step::before{display:none}
-.memory-steps.is-summary{display:block;padding:0}
 .memory-steps.is-summary .memory-step + .memory-step{padding-top:2.6rem}
-.memory-steps.is-summary .memory-step + .memory-step::before{display:none}
-.memory-steps.is-summary .memory-step + .memory-step::after{left:50%;top:1.25rem;width:.46rem;height:.46rem;border-top:0;border-right:1px solid #f0dcb0;border-bottom:1px solid #f0dcb0;transform:translate(-50%,-50%) rotate(45deg)}
+.memory-steps.is-summary .memory-step + .memory-step::after{content:'';position:absolute;left:50%;top:1.25rem;width:.46rem;height:.46rem;border-right:1px solid #f0dcb0;border-bottom:1px solid #f0dcb0;transform:translate(-50%,-50%) rotate(45deg)}
 }
 @media(max-width:700px){
 .memory-intro{padding-bottom:1.75rem}
