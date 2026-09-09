@@ -825,7 +825,7 @@
       .reveal { opacity: 1; transform: none; }
     }
   </style>
-  <link rel="stylesheet" href="assets/memory-room.css?v=3">
+  <link rel="stylesheet" href="assets/memory-room.css?v=4">
 </head>
 
 <body>
@@ -933,7 +933,6 @@
           <p class="memory-kicker">How a commission unfolds</p>
           <h2 id="artefacts-title">Four steps<br>to <em>live it again.</em></h2>
         </div>
-        <p class="memory-invitation">Begin at the window, then travel the room.<br>Each step returns its own colour.<span>Choose each numbered marker in turn.</span></p>
       </header>
 
       <div class="memory-exhibit">
@@ -943,7 +942,7 @@
         </div>
         <div class="memory-stage">
           <div class="memory-room" id="memoryRoom" role="group" aria-label="The four steps of a General Memory commission, shown in a Peranakan living room" aria-describedby="roomInstructions">
-            <p class="memory-sr" id="roomInstructions">Four numbered steps describe how a commission unfolds. Choose a step to bring its part of the room into colour and read what happens at that stage. You may take them in any order; the fourth completes the room.</p>
+            <p class="memory-sr" id="roomInstructions">Four steps describe how a commission unfolds. One step waits at a time: choosing it brings its part of the room into colour, tells you what happens at that stage, and offers you the step that follows. The fourth completes the room.</p>
             <div class="memory-room__canvas">
               <img class="memory-room__image" src="assets/memory-room/room-empty.webp" width="1536" height="1024" loading="lazy" decoding="async" alt="A sunlit Peranakan room with an open window on the left, a carved rattan settee, a walnut table and an empty display shelf on the right.">
               <!-- The completed background stays behind the foreground children. -->
@@ -954,17 +953,21 @@
               <img class="memory-recollection" data-recollection="table" data-src="assets/memory-room/room-foreground.webp?v=3" width="1536" height="1024" alt="" aria-hidden="true">
               <noscript><img class="memory-room__static" src="assets/memory-room/room-complete.webp?v=3" width="1536" height="1024" loading="lazy" alt="The room filled with family memories: children playing cards, a laughing family on the settee, a girl on tiptoes at the window, and trophies on the shelf."></noscript>
               <span class="memory-room__shade" aria-hidden="true"></span>
-              <button class="memory-hotspot memory-hotspot--window" type="button" data-memory="window" data-label="Step one, interviews" style="--x:11.5%;--y:35%;--hit-w:17%;--hit-h:45%" aria-label="Step one, interviews. Open this step.">
-                <span class="memory-hotspot__marker" aria-hidden="true"><b>1</b></span><span class="memory-hotspot__label">1 &middot; Interviews</span>
+              <svg class="memory-guide" id="roomGuide" viewBox="0 0 1536 1024" aria-hidden="true" focusable="false">
+                <path class="memory-guide__line" id="roomGuideLine" d=""></path>
+                <path class="memory-guide__head" id="roomGuideHead" d=""></path>
+              </svg>
+              <button class="memory-hotspot memory-hotspot--window" type="button" data-memory="window" data-label="Step one, hearing and understanding your story" style="--x:11.5%;--y:35%;--hit-w:17%;--hit-h:45%" aria-label="Step one, hearing and understanding your story. Open this step.">
+                <span class="memory-hotspot__chip"><span class="memory-hotspot__face"><span class="memory-hotspot__num" aria-hidden="true">1</span><span class="memory-hotspot__text">Hearing and understanding your story</span></span></span>
               </button>
-              <button class="memory-hotspot memory-hotspot--table" type="button" data-memory="table" data-label="Step two, collecting your things" style="--x:53%;--y:81%;--hit-w:76%;--hit-h:34%" aria-label="Step two, collecting your things. Open this step.">
-                <span class="memory-hotspot__marker" aria-hidden="true"><b>2</b></span><span class="memory-hotspot__label">2 &middot; Collecting your things</span>
+              <button class="memory-hotspot memory-hotspot--table" type="button" data-memory="table" data-label="Step two, gathering your memories" style="--x:53%;--y:81%;--hit-w:76%;--hit-h:34%" aria-label="Step two, gathering your memories. Open this step.">
+                <span class="memory-hotspot__chip"><span class="memory-hotspot__face"><span class="memory-hotspot__num" aria-hidden="true">2</span><span class="memory-hotspot__text">Gathering your memories</span></span></span>
               </button>
-              <button class="memory-hotspot memory-hotspot--shelf" type="button" data-memory="shelf" data-label="Step three, crafting your memories" style="--x:91.5%;--y:34%;--hit-w:13%;--hit-h:53%" aria-label="Step three, crafting your memories. Open this step.">
-                <span class="memory-hotspot__marker" aria-hidden="true"><b>3</b></span><span class="memory-hotspot__label">3 &middot; Crafting your memories</span>
+              <button class="memory-hotspot memory-hotspot--shelf" type="button" data-memory="shelf" data-label="Step three, crafting something you can keep forever" style="--x:91.5%;--y:34%;--hit-w:13%;--hit-h:53%" aria-label="Step three, crafting something you can keep forever. Open this step.">
+                <span class="memory-hotspot__chip"><span class="memory-hotspot__face"><span class="memory-hotspot__num" aria-hidden="true">3</span><span class="memory-hotspot__text">Crafting something you can keep forever</span></span></span>
               </button>
-              <button class="memory-hotspot memory-hotspot--settee" type="button" data-memory="settee" data-label="Step four, the reunion" style="--x:52%;--y:43%;--hit-w:43%;--hit-h:40%" aria-label="Step four, the reunion. Open this step.">
-                <span class="memory-hotspot__marker" aria-hidden="true"><b>4</b></span><span class="memory-hotspot__label">4 &middot; The reunion</span>
+              <button class="memory-hotspot memory-hotspot--settee" type="button" data-memory="settee" data-label="Step four, showing you how to enjoy your new treasures" style="--x:52%;--y:56%;--hit-w:43%;--hit-h:40%" aria-label="Step four, showing you how to enjoy your new treasures. Open this step.">
+                <span class="memory-hotspot__chip"><span class="memory-hotspot__face"><span class="memory-hotspot__num" aria-hidden="true">4</span><span class="memory-hotspot__text">Showing you how to enjoy your new treasures</span></span></span>
               </button>
             </div>
             <p class="memory-scene-error" id="roomImageError" hidden>The memory is taking a little longer to arrive. Touch a step to try again.</p>
@@ -999,13 +1002,7 @@
         <p class="memory-sr" id="roomAnnouncement" role="status" aria-live="polite" aria-atomic="true"></p>
       </div>
 
-      <div class="memory-afterword">
-        <h3>Your life will suggest<br>its own form.</h3>
-        <div>
-          <p>Perhaps an heirloom to hold, connected to a private world of photographs, films and stories. Perhaps a small reminder that becomes part of every day. Together, we discover what feels like you.</p>
-          <small>This room and its memories are imagined. Every commission begins with your life.</small>
-        </div>
-      </div>
+      <p class="memory-note">This room and its memories are imagined. Every commission begins with your life.</p>
     </section>
 
 
@@ -1640,6 +1637,6 @@
       document.querySelectorAll('.reveal').forEach(element => element.classList.add('is-visible'));
     }
   </script>
-  <script src="assets/memory-room.js?v=3" defer></script>
+  <script src="assets/memory-room.js?v=4" defer></script>
 </body>
 </html>
