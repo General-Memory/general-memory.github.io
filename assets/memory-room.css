@@ -78,11 +78,23 @@
 .memory-step::before{content:'';position:absolute;background:#d8c9a05c}
 .memory-step--window{--sx:20.5%;--sy:20%}
 .memory-step--table{--sx:50%;--sy:51%;--tx:-50%;--ty:-100%;--sw:33%}
-.memory-step--shelf{--sx:82%;--sy:20%;--tx:-100%}
+.memory-step--shelf{--sx:82%;--sy:12%;--tx:-100%}
 .memory-step--settee{--sx:50%;--sy:3%;--tx:-50%;--sw:38%}
 .memory-step--window::before{left:-1.5rem;top:2rem;width:1.5rem;height:1px}
 .memory-step--shelf::before{right:-1.5rem;top:2rem;width:1.5rem;height:1px}
 .memory-step--table::before,.memory-step--settee::before{left:50%;bottom:-1.4rem;width:1px;height:1.4rem}
+/* Top-anchored with an auto height, so the four cards square off at the height
+   of the fullest one rather than stretching down the whole picture. */
+.memory-steps.is-summary{--summary-gap:clamp(1.5rem,2.4vw,2.75rem);bottom:auto;display:flex;align-items:stretch;gap:var(--summary-gap);padding:3.4% 2.4% 0}
+.memory-steps.is-summary .memory-step{position:relative;left:auto;top:auto;flex:1 1 0;width:auto;min-width:0;max-width:none;transform:none;visibility:visible;opacity:0;translate:0 12px;transition:opacity .9s ease,translate 1s cubic-bezier(.16,1,.3,1)}
+.memory-steps.is-summary.is-lit .memory-step{opacity:1;translate:0 0}
+.memory-steps.is-summary .memory-step:nth-child(2){transition-delay:.12s}
+.memory-steps.is-summary .memory-step:nth-child(3){transition-delay:.24s}
+.memory-steps.is-summary .memory-step:nth-child(4){transition-delay:.36s}
+/* The tick that pointed at an object becomes the line that points at the next step. */
+.memory-steps.is-summary .memory-step::before{display:none}
+.memory-steps.is-summary .memory-step + .memory-step::before{display:block;left:calc(-1 * var(--summary-gap));right:auto;top:2.15rem;width:var(--summary-gap);height:1px;background:linear-gradient(90deg,#f0dcb01f,#f0dcb0)}
+.memory-steps.is-summary .memory-step + .memory-step::after{content:'';position:absolute;left:-.42rem;top:2.15rem;width:.42rem;height:.42rem;border-top:1px solid #f0dcb0;border-right:1px solid #f0dcb0;transform:translateY(-50%) rotate(45deg)}
 .memory-step__index{margin:0 0 .55rem;color:#cbb386;font-size:.75rem;font-weight:400;letter-spacing:.16em;text-transform:uppercase}
 .memory-step h3{margin:0 0 .5rem;font:300 clamp(1.2rem,1.5vw,1.6rem)/1.12 var(--display);letter-spacing:-.01em;color:#f4ecda}
 .memory-step p{margin:0;font-size:.875rem;line-height:1.6;color:#c8c7b7}
@@ -106,15 +118,19 @@ html:not(.js) .memory-step::before{display:none}
 .memory-steps{position:static}
 .memory-step{position:static;width:auto;min-width:0;max-width:none;padding:1rem 1.25rem 1.15rem;border-width:1px 0 0;background:#121611;box-shadow:none;transform:none;opacity:1;visibility:visible;pointer-events:auto}
 .js .memory-step{display:none}
-.js .memory-step.is-current{display:block}
+.js .memory-step.is-current,.js .memory-steps.is-summary .memory-step{display:block}
 .memory-step::before{display:none}
+.memory-steps.is-summary{display:block;padding:0}
+.memory-steps.is-summary .memory-step + .memory-step{padding-top:2.6rem}
+.memory-steps.is-summary .memory-step + .memory-step::before{display:none}
+.memory-steps.is-summary .memory-step + .memory-step::after{left:50%;top:1.25rem;width:.46rem;height:.46rem;border-top:0;border-right:1px solid #f0dcb0;border-bottom:1px solid #f0dcb0;transform:translate(-50%,-50%) rotate(45deg)}
 }
 @media(max-width:700px){
 .memory-intro{padding-bottom:1.75rem}
 }
 @media(max-width:600px){
 .artefacts{padding:3.5rem 1.1rem}.memory-intro{padding-inline:.2rem}
-.memory-intro h2{font-size:clamp(2.5rem,9.9vw,3.6rem)}
+.memory-intro h2{font-size:clamp(1.95rem,9.9vw,3.6rem)}
 .memory-exhibit{margin-inline:-.8rem}.memory-exhibit__top{padding:.3rem .8rem}
 /* Keep the entire window and shelf visible on phones. */
 .memory-room{aspect-ratio:3/2}
@@ -130,6 +146,7 @@ html:not(.js) .memory-step::before{display:none}
 }
 @media(prefers-reduced-motion:reduce){
 .memory-recollection,.memory-room__complete,.memory-hotspot__chip,.memory-hotspot__chip::before,.memory-hotspot__face,.memory-hotspot__text,.memory-step,.memory-guide,.memory-guide path{transition:none!important;animation:none!important}
+.memory-steps.is-summary .memory-step{translate:none!important}
 .memory-hotspot__chip{translate:none!important}
 }
 @media(forced-colors:active){

@@ -10,7 +10,8 @@
   const canvas = room.querySelector('.memory-room__canvas');
   const buttons = [...room.querySelectorAll('[data-memory]')];
   const layers = [...room.querySelectorAll('[data-recollection]')];
-  const cards = [...document.querySelectorAll('#roomSteps [data-step]')];
+  const stepsPanel = document.getElementById('roomSteps');
+  const cards = [...stepsPanel.querySelectorAll('[data-step]')];
   const fullScene = document.getElementById('roomComplete');
   // One above the picture and one below it; either takes the tour back to the start.
   const resetButtons = [...document.querySelectorAll('.memory-reset')];
@@ -59,6 +60,7 @@
   let guidePair = null;
   let guideDrawing = false;
   let guideStale = false;
+  let summaryTimer = null;
   let epoch = 0;
 
   function loadImage(image) {
@@ -292,7 +294,20 @@
       if (epoch !== expectedEpoch || revealed.size !== buttons.length) return;
       room.classList.add('is-complete');
       caption.textContent = 'Four steps. A room is made of the life inside it.';
-      announcement.textContent = 'All four steps are open. The whole room is now in colour.';
+      announcement.textContent = 'All four steps are open. The whole room is now in colour, and the four steps are shown together, in order.';
+      // The last card steps aside, and the four of them come back as one recap.
+      showCard(null);
+      summaryTimer = window.setTimeout(() => {
+        if (epoch !== expectedEpoch || revealed.size !== buttons.length) return;
+        stepsPanel.classList.add('is-summary');
+        if (reducedMotion.matches) {
+          stepsPanel.classList.add('is-lit');
+          return;
+        }
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+          if (stepsPanel.classList.contains('is-summary')) stepsPanel.classList.add('is-lit');
+        }));
+      }, reducedMotion.matches ? 0 : 620);
     }, reducedMotion.matches ? 0 : 2500);
   }
 
@@ -367,6 +382,8 @@
   function restart() {
     epoch += 1;
     window.clearTimeout(completeTimer);
+    window.clearTimeout(summaryTimer);
+    stepsPanel.classList.remove('is-summary', 'is-lit');
     window.clearTimeout(resetTimer);
     window.clearTimeout(handOffTimer);
     window.clearTimeout(drawTimer);
