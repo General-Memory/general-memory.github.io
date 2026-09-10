@@ -10,7 +10,9 @@
   <meta property="og:description" content="Your life is full of stories. Keep them alive.">
   <meta property="og:type" content="website">
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%23111713'/%3E%3Cpath d='M8 23V13a8 8 0 0 1 16 0v10M12 23V13a4 4 0 0 1 8 0v10' fill='none' stroke='%23c09a57' stroke-width='1.25' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="180x180" href="assets/favicon-180.png">
+  <link rel="apple-touch-icon" href="assets/favicon-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&amp;family=Spectral:ital,wght@0,300;0,400;0,500;1,300&amp;display=swap" rel="stylesheet">
@@ -165,8 +167,8 @@
 
     .hero.is-ended .hero__end-vignette { opacity: 1; }
 
-    /* The mark is drawn on its own ground, so the bar is laid in the same
-       colour and the two read as one surface rather than a tile on the film. */
+    /* The mark carries its own transparency, so the bar stays clear and it
+       floats on the film as the lettered wordmark did. */
     .masthead {
       position: absolute;
       inset: 0 0 auto;
@@ -175,8 +177,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 1.5rem;
-      padding: clamp(.75rem, 1.15vw, 1rem) var(--gutter);
-      background: var(--dark-soft);
+      padding: clamp(1.1rem, 2.2vw, 2rem) var(--gutter);
     }
 
     .wordmark {
