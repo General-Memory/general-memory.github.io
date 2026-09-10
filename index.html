@@ -10,7 +10,9 @@
   <meta property="og:description" content="Your life is full of stories. Keep them alive.">
   <meta property="og:type" content="website">
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%23111713'/%3E%3Cpath d='M8 23V13a8 8 0 0 1 16 0v10M12 23V13a4 4 0 0 1 8 0v10' fill='none' stroke='%23c09a57' stroke-width='1.25' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="180x180" href="assets/favicon-180.png">
+  <link rel="apple-touch-icon" href="assets/favicon-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&amp;family=Spectral:ital,wght@0,300;0,400;0,500;1,300&amp;display=swap" rel="stylesheet">
@@ -165,6 +167,8 @@
 
     .hero.is-ended .hero__end-vignette { opacity: 1; }
 
+    /* The mark carries its own transparency, so the bar stays clear and it
+       floats on the film as the lettered wordmark did. */
     .masthead {
       position: absolute;
       inset: 0 0 auto;
@@ -172,28 +176,20 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: clamp(1.35rem, 3vw, 2.4rem) var(--gutter);
+      gap: 1.5rem;
+      padding: clamp(1.1rem, 2.2vw, 2rem) var(--gutter);
     }
 
     .wordmark {
-      display: inline-flex;
-      align-items: center;
-      gap: .8rem;
-      margin: -.55rem 0;
-      padding: .55rem 0;
+      display: block;
       color: var(--bone);
       text-decoration: none;
     }
 
-    .wordmark svg { width: 1.35rem; height: 1.35rem; }
-
-    .wordmark span {
-      font-family: var(--display);
-      font-size: clamp(1.2rem, 1.6vw, 1.6rem);
-      font-weight: 400;
-      line-height: 1;
-      letter-spacing: .19em;
-      text-transform: uppercase;
+    .wordmark img {
+      display: block;
+      width: auto;
+      height: clamp(2.5rem, 4.1vw, 3.9rem);
     }
 
     .masthead__link {
@@ -621,10 +617,7 @@
     }
 
     @media (max-width: 560px) {
-      .masthead { align-items: flex-start; }
-      .wordmark { gap: .55rem; }
-      .wordmark svg { width: 1.05rem; height: 1.05rem; }
-      .wordmark span { max-width: 8.5rem; font-size: .96rem; line-height: 1.05; letter-spacing: .14em; }
+      .masthead { align-items: center; }
       .masthead__link {
         max-width: 9.75rem;
         padding: .5rem 0;
@@ -684,12 +677,6 @@
     }
 
     @media (max-width: 380px) {
-      .wordmark span {
-        max-width: 6.75rem;
-        font-size: .82rem;
-        letter-spacing: .1em;
-      }
-
       .masthead__link {
         max-width: 7.75rem;
         font-size: .63rem;
@@ -759,10 +746,7 @@
 
       <header class="masthead">
         <a class="wordmark" href="#top" aria-label="General Memory, home">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4 20V10a8 8 0 0 1 16 0v10M8 20V10a4 4 0 0 1 8 0v10" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
-          </svg>
-          <span>General Memory</span>
+          <img src="assets/general-memory-wordmark.png" width="512" height="232" alt="" decoding="async">
         </a>
         <a class="masthead__link" href="#contact">I'm ready to start the journey</a>
       </header>
