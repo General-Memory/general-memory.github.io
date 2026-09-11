@@ -371,7 +371,7 @@
     completeTimer = window.setTimeout(() => {
       if (epoch !== expectedEpoch || revealed.size !== buttons.length) return;
       room.classList.add('is-complete');
-      caption.textContent = 'Four steps. A room is made of the life inside it.';
+      caption.textContent = '';
       announcement.textContent = 'All four steps are open. The whole room is now in colour, and the four steps are shown together, in order.';
       // A beat to take in the fourth card, which keeps its place; then the other
       // three take theirs around it and the arcs are drawn between all four.
