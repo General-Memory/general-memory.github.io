@@ -2,7 +2,7 @@
 .artefacts{position:relative;z-index:2;border-top:1px solid rgba(192,154,87,calc(.16 + var(--open)*.52));box-shadow:0 -1.4rem 3.4rem #000a;padding:clamp(4rem,7vw,7rem) var(--gutter) clamp(3.5rem,7vw,7rem);background:var(--dark);overflow:hidden}
 .memory-intro,.memory-exhibit{position:relative;z-index:3;max-width:1320px;margin-inline:auto}
 .memory-intro{padding-bottom:clamp(2rem,4vw,3.5rem)}
-.memory-intro h2{margin:0;font:300 clamp(2.6rem,4.6vw,5rem)/.99 var(--display);letter-spacing:-.025em}
+.memory-intro h2{margin:0;font:300 clamp(2.6rem,4.6vw,5rem)/.99 var(--display);letter-spacing:-.025em;text-wrap:balance}
 .memory-intro h2 em{font-weight:300;color:#c9b58d}
 .memory-exhibit{border:1px solid #595d4b;background:#121611}
 .memory-exhibit__top,.memory-exhibit__bottom{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 1.35rem}
@@ -57,6 +57,22 @@
 .memory-hotspot.is-available:not(.is-revealed):hover .memory-hotspot__chip::before,
 .memory-hotspot.is-available:not(.is-revealed):focus-visible .memory-hotspot__chip::before{opacity:1;scale:1.06;animation:none}
 .memory-hotspot.is-available:not(.is-revealed):active .memory-hotspot__face{scale:.995;transition-duration:.09s}
+/* Touch has no hover: each waiting step cycles through the same warm highlight.
+   Animate only the face, leaving the chip and its guide-arrow anchor in place. */
+@keyframes memoryTouchHighlight{
+  0%,100%{background:#0d120edb;color:#f7eed9;border-color:#ecd9ab5e;box-shadow:0 .6rem 1.5rem -.45rem #000000c2,0 .1rem .35rem #00000078,0 0 1.9rem -.6rem #f0d49c94,inset 0 1px 0 #fff4da21;scale:1}
+  40%,60%{background:#eddfbb;color:#141a15;border-color:#f8efd8;box-shadow:0 .95rem 2.2rem -.5rem #000000cc,0 0 0 .38rem #efdeb824,0 0 2.6rem -.4rem #f2ddaeb3,inset 0 1px 0 #fffdf6;scale:1.035}
+}
+@media (hover:none), (pointer:coarse){
+  @media (prefers-reduced-motion:no-preference) and (forced-colors:none){
+    .memory-hotspot.is-next:not(.is-revealed):not([aria-busy='true']):not(:active):not(:focus-visible) .memory-hotspot__face{animation:memoryTouchHighlight 3.6s ease-in-out infinite}
+    .memory-hotspot.is-next:not(.is-revealed):not([aria-busy='true']):not(:active):not(:focus-visible) .memory-hotspot__chip::before{animation:memoryChipGlow 3.6s ease-in-out infinite}
+  }
+  /* Keep the invitation clear without cycling when motion is reduced. */
+  @media (prefers-reduced-motion:reduce){
+    .memory-hotspot.is-next:not(.is-revealed):not([aria-busy='true']) .memory-hotspot__face{--chip-bg:#eddfbb;--chip-fg:#141a15;--chip-line:#f8efd8}
+  }
+}
 /* The hit area covers the whole object, so the focus ring belongs on the chip. */
 .memory-hotspot:focus-visible{outline:none}
 .memory-hotspot:focus-visible .memory-hotspot__face{outline:1px solid #ead3a1;outline-offset:.28em}
