@@ -758,10 +758,11 @@
     }
   </style>
   <link rel="stylesheet" href="assets/memory-room.css?v=7">
+  <link rel="stylesheet" href="assets/commission.css?v=1">
 </head>
 
 <body>
-  <a class="skip-link" href="#artefacts">Skip to the artefacts</a>
+  <a class="skip-link" href="#commission">Skip to the commission</a>
 
   <main>
     <section class="hero bookcloth" id="top" aria-labelledby="hero-title">
@@ -809,7 +810,7 @@
       </div>
 
       <div class="hero__footer">
-        <a class="scroll-cue" href="#artefacts" aria-label="Open the seam">
+        <a class="scroll-cue" href="#commission" aria-label="Open the seam">
           <svg viewBox="0 0 18 24" fill="none" aria-hidden="true">
             <path d="M9 1v20M2.5 14.5 9 21l6.5-6.5" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -838,8 +839,88 @@
       </div>
     </section>
 
-    <section class="artefacts bookcloth" id="artefacts" aria-labelledby="artefacts-title">
+    <div class="page-continuation">
+    <section class="commission bookcloth" id="commission" aria-labelledby="commission-title">
       <span class="seam-tick seam-tick--next" aria-hidden="true"></span>
+      <div class="commission__inner">
+        <header class="commission__heading">
+          <div>
+            <p class="commission__kicker">By private commission</p>
+            <h2 id="commission-title">Your memories,<br><em>beautifully kept.</em></h2>
+          </div>
+          <p class="commission__lede">Every commission includes a handmade book and a private digital story. Two ways to keep your memories close.</p>
+        </header>
+
+        <figure class="commission__hero">
+          <img src="assets/commission/book-and-archive-1600.webp"
+               srcset="assets/commission/book-and-archive-800.webp 800w, assets/commission/book-and-archive-1600.webp 1600w, assets/commission/book-and-archive-1984.webp 1984w"
+               sizes="(max-width: 520px) 100vw, (max-width: 1440px) 92vw, 1320px"
+               width="1984" height="800" loading="lazy" decoding="async"
+               alt="A handbound memoir with family photographs, beside a phone displaying a private archive of stories, voice recordings and films.">
+          <figcaption>An illustrative commission</figcaption>
+        </figure>
+
+        <div class="commission__heirlooms">
+          <div class="commission__heirloom">
+            <h3><span class="commission__number" aria-hidden="true">I</span>A handmade book</h3>
+            <p>Your life stories, told in words and images. Crafted with the highest care and attention to detail.</p>
+          </div>
+          <div class="commission__heirloom">
+            <h3><span class="commission__number" aria-hidden="true">II</span>A growing archive</h3>
+            <p>A private website or mobile app for photographs, films and your own recorded voice. It grows with you over time.</p>
+          </div>
+        </div>
+
+      </div>
+      <div class="commission__work" id="how-we-work">
+      <div class="commission__inner">
+        <div class="commission__process" aria-labelledby="commission-process-title">
+          <div>
+            <h3 class="commission__process-title" id="commission-process-title">How we work</h3>
+            <p class="commission__process-intro">Unhurried conversations, at your pace. Every detail shaped around you.</p>
+            <div class="commission__gallery">
+              <figure class="commission__conversation">
+                <img src="assets/commission/conversation-640.webp"
+                     srcset="assets/commission/conversation-640.webp 640w, assets/commission/conversation-1200.webp 1200w"
+                     sizes="(max-width: 760px) 48vw, 25vw"
+                     width="1536" height="1024" loading="lazy" decoding="async"
+                     alt="Sharing stories over tea and family photographs.">
+                <figcaption>Time to be heard.</figcaption>
+              </figure>
+              <figure class="commission__binding">
+                <img src="assets/commission/bookbinding-640.webp"
+                     srcset="assets/commission/bookbinding-640.webp 640w, assets/commission/bookbinding-1200.webp 1200w"
+                     sizes="(max-width: 760px) 42vw, 22vw"
+                     width="2048" height="1152" loading="lazy" decoding="async"
+                     alt="An artisan sewing the pages of a book by hand with linen thread.">
+                <figcaption>Care in every detail.</figcaption>
+              </figure>
+            </div>
+          </div>
+          <ol class="commission__steps">
+            <li>
+              <span class="commission__number" aria-hidden="true">I</span>
+              <div><h4>Tell your stories.</h4><p>Unhurried conversations over tea. We listen as you revisit the people and moments that shaped you.</p></div>
+            </li>
+            <li>
+              <span class="commission__number" aria-hidden="true">II</span>
+              <div><h4>Shape it together.</h4><p>We propose a design for your story. Together, we choose the materials and digital experiences.</p></div>
+            </li>
+            <li>
+              <span class="commission__number" aria-hidden="true">III</span>
+              <div><h4>See it take form.</h4><p>We write, design and craft. You review with us before your book and digital story arrive.</p></div>
+            </li>
+          </ol>
+        </div>
+        <footer class="commission__closing">
+          <p>Keep your memories alive.</p>
+          <a class="commission__link" href="#contact">Begin with a conversation <span aria-hidden="true">↗</span></a>
+        </footer>
+      </div>
+      </div>
+    </section>
+
+    <section class="artefacts bookcloth" id="artefacts" aria-labelledby="artefacts-title">
       <header class="memory-intro">
         <div>
           <h2 id="artefacts-title">How we <em>work with you.</em></h2>
@@ -939,6 +1020,7 @@
         </dl>
       </div>
     </section>
+    </div><!-- All sections after the aperture move together at the seam. -->
   </main>
 
 
@@ -993,9 +1075,9 @@
     }
 
     /* The parting.
-       At rest the artefacts section is held directly beneath the hero, so the
+       At rest the page continuation is held directly beneath the hero, so the
        two meet at a single seam. Moving through the aperture section widens
-       the distance between the hero's bottom edge and the artefacts' top edge,
+       the distance between the hero's bottom edge and the commission's top edge,
        symmetrically about the middle of the screen, up to a full viewport —
        then closes it again and hands the page back to ordinary scrolling.
 
@@ -1019,7 +1101,7 @@
        is recoverable from scrollY alone whatever the browser does to it. */
     const aperture = document.querySelector('#aperture');
     const heroSection = document.querySelector('.hero');
-    const nextSection = document.querySelector('#artefacts');
+    const nextSection = document.querySelector('.page-continuation');
 
     if (aperture && heroSection && nextSection) {
       const root = document.documentElement;
@@ -1547,5 +1629,6 @@
     }
   </script>
   <script src="assets/memory-room.js?v=7" defer></script>
+  <script src="assets/commission.js?v=1" defer></script>
 </body>
 </html>

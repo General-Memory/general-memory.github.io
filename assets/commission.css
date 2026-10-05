@@ -1,0 +1,77 @@
+/* The commission shares the site's bookcloth, typography and gilt palette. */
+.page-continuation { position: relative; z-index: 2; background: var(--dark); }
+.commission {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(4rem, 7vw, 7rem) var(--gutter) 0;
+  border-top: 1px solid rgba(192,154,87,calc(.16 + var(--open) * .52));
+  box-shadow: 0 -1.4rem 3.4rem #000a;
+  background: var(--dark);
+}
+.commission__inner { position: relative; z-index: 3; max-width: 1320px; margin-inline: auto; }
+.commission :where(h2,h3,h4,p,figure,ol) { margin: 0; }
+.commission__heading { display: grid; grid-template-columns: 1.25fr 1fr; gap: 2rem 5rem; align-items: end; }
+.commission__kicker { margin-bottom: 1.25rem !important; color: #cbb386; font-size: .875rem; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
+.commission h2 { font: 300 clamp(2.75rem,4.6vw,5rem)/1.02 var(--display); letter-spacing: -.025em; }
+.commission h2 em { display: block; color: #c9b58d; font-weight: inherit; }
+.commission__lede { max-width: 36ch; color: var(--bone-deep); font-size: 1.0625rem; line-height: 1.75; }
+.commission__hero { margin-top: clamp(2rem,3.8vw,3.5rem); }
+.commission__hero img { width: 100%; height: auto; aspect-ratio: 1984 / 800; object-fit: cover; }
+.commission figcaption { margin-top: .65rem; color: #a8ac9f; font-size: .8125rem; line-height: 1.5; }
+.commission__hero figcaption { text-align: right; }
+.commission__heirlooms { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,6vw,6rem); margin-top: 1.5rem; }
+.commission__heirloom { padding-top: 1.3rem; border-top: 1px solid var(--rule); }
+.commission h3 { font: 400 clamp(1.9rem,2.7vw,2.8rem)/1.12 var(--display); letter-spacing: -.015em; }
+.commission__number { display: inline-block; margin-right: .75rem; color: var(--gilt); font: italic 400 1rem/1 var(--display); vertical-align: baseline; }
+.commission__heirloom p { max-width: 48ch; margin-top: .85rem; color: #c5c7ba; font-size: 1rem; line-height: 1.75; }
+.commission__work { position: relative; z-index: 3; margin: clamp(3.5rem,7vw,6rem) calc(-1 * var(--gutter)) 0; padding: clamp(3rem,5vw,5rem) var(--gutter) 0; color: var(--dark); background: var(--bone); }
+.commission__process { display: grid; grid-template-columns: 1.08fr 1fr; gap: clamp(2.5rem,6vw,6rem); margin-top: 0; padding-bottom: clamp(2.5rem,4vw,4rem); }
+.commission h3.commission__process-title { font: 300 clamp(2.25rem,3.5vw,3.5rem)/1.08 var(--display); }
+.commission__process-intro { max-width: 36ch; margin-top: 1rem !important; color: #454b40; line-height: 1.75; }
+.commission__gallery { display: grid; grid-template-columns: 1.15fr 1fr; align-items: start; gap: 1rem; margin-top: 2rem; }
+.commission__gallery img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.commission__conversation img { object-position: 57% 35%; }
+.commission__binding { margin-top: 2rem !important; }
+.commission__gallery figcaption { color: #66502e; font: italic 400 1.125rem/1.35 var(--display); }
+.commission__steps { list-style: none; padding: 0; align-self: center; }
+.commission__steps li { display: grid; grid-template-columns: 1.5rem 1fr; gap: 1rem; padding-block: 1.25rem; border-bottom: 1px solid rgba(17,23,19,.2); }
+.commission__steps li:first-child { padding-top: 0; }
+.commission__steps li:last-child { padding-bottom: 0; border: 0; }
+.commission__steps .commission__number { margin: .4rem 0 0; color: #72501e; }
+.commission h4 { font: 400 clamp(1.6rem,2vw,2rem)/1.2 var(--display); }
+.commission__steps p { max-width: 43ch; margin-top: .6rem; color: #454b40; font-size: 1rem; line-height: 1.75; }
+.commission__closing { display: flex; align-items: center; justify-content: space-between; gap: 1rem 2rem; flex-wrap: wrap; padding: 1.5rem 0 clamp(3rem,5vw,5rem); }
+.commission__closing p { font: italic 300 clamp(1.65rem,2.5vw,2.5rem)/1.2 var(--display); }
+.commission__link { display: inline-flex; align-items: center; gap: 1.25rem; min-height: 44px; padding-block: .6rem; color: #72501e; font-size: .9375rem; text-decoration: underline; text-underline-offset: .45em; text-decoration-color: #72501e80; transition: color 180ms ease, text-decoration-color 180ms ease; }
+.commission__link:focus-visible { outline-color: #72501e; }
+.commission__link:hover { color: var(--dark); text-decoration-color: currentColor; }
+.commission__link span { font-size: 1.3rem; }
+/* The seam now belongs to the commission; a quiet rule introduces the room. */
+.page-continuation .artefacts { box-shadow: none; border-top: 1px solid var(--rule); }
+@media (max-width: 760px) {
+  .commission__heading { grid-template-columns: 1fr; gap: 1.3rem; }
+  .commission__lede { max-width: 43ch; }
+  .commission__process { grid-template-columns: 1fr; gap: 2.25rem; }
+  .commission__process-intro { max-width: 43ch; }
+  .commission__gallery { max-width: 34rem; }
+  .commission__steps p { max-width: 55ch; }
+}
+@media (max-width: 520px) {
+  .commission { padding-top: 3.5rem; }
+  .commission h2 { font-size: clamp(2.45rem,10.6vw,3.45rem); }
+  .commission__lede { font-size: 1rem; }
+  .commission__hero { margin-inline: calc(-1 * var(--gutter)); }
+  .commission__hero img { aspect-ratio: 2.15; object-position: 75% center; }
+  .commission__hero figcaption { padding-inline: var(--gutter); }
+  .commission__heirlooms { grid-template-columns: 1fr; gap: 1.75rem; }
+  .commission__heirloom { padding-top: 1.15rem; }
+  .commission__heirloom p { margin-top: .65rem; }
+  .commission__work { margin-top: 3rem; padding-top: 2.5rem; }
+  .commission__process { margin-top: 0; padding-block: 0 1.5rem; }
+  .commission__gallery { gap: .85rem; margin-top: 1.5rem; }
+  .commission__binding { margin-top: 1.5rem !important; }
+  .commission__gallery img { aspect-ratio: 1; }
+  .commission__gallery figcaption { font-size: 1.0625rem; }
+  .commission__steps li { column-gap: .65rem; }
+  .commission__closing { align-items: flex-start; flex-direction: column; gap: .6rem; padding-top: 1.5rem; }
+}
